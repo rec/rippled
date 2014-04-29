@@ -17,15 +17,17 @@
 */
 //==============================================================================
 
-#include "../../BeastConfig.h"
+#ifndef RIPPLE_JSON_API_JSON_VERIFY_H
+#define RIPPLE_JSON_API_JSON_VERIFY_H
 
-#include "ripple_rpc.h"
+namespace ripple {
+namespace RPC {
 
-// Unfortunate but necessary since RPC handlers can literally do anything
-#include "../ripple_app/ripple_app.h"
+/** Verify multiple fields from a JSON value. */
+Json::Value verifyJson(Json::Value const& value,
+                       std::vector<std::string> names);
 
-#include "impl/ErrorCodes.cpp"
-#include "impl/Manager.cpp"
-#include "impl/VerifyJson.cpp"
+} // RPC
+} // ripple
 
-
+#endif // RIPPLE_JSON_API_JSON_VERIFY_H
