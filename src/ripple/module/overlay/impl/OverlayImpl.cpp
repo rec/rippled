@@ -336,36 +336,29 @@ OverlayImpl::disconnect (PeerFinder::Slot::ptr const& slot, bool graceful)
 void
 OverlayImpl::onPrepare ()
 {
-    PeerFinder::Config config;
+    PeerFinder::ConfigProto config;
+    // TODO(tom): in the end-game, getConfig() would return a proto containing
+    // PeerFinder::ConfigProto.
+    auto const& cfg = getConfig();
 
-    if (getConfig ().PEERS_MAX != 0)
-        config.maxPeers = getConfig ().PEERS_MAX;
+    if (cfg.PEERS_MAX != 0)
+        config.set_max_peers(cfg.PEERS_MAX);
 
-    config.outPeers = config.calcOutPeers();
-
-    config.wantIncoming =
-        (! getConfig ().PEER_PRIVATE) &&
-        (getConfig().peerListeningPort != 0);
+    config.set_want_incoming(
+        !cfg.PEER_PRIVATE && getConfig().peerListeningPort);
 
     // if it's a private peer or we are running as standalone
     // automatic connections would defeat the purpose.
-    config.autoConnect =
-        !getConfig().RUN_STANDALONE &&
-        !getConfig().PEER_PRIVATE;
+    config.set_auto_connect(
+        !(getConfig().RUN_STANDALONE || getConfig().PEER_PRIVATE));
 
-    config.listeningPort = getConfig().peerListeningPort;
-
-    config.features = "";
-
-    // Enforce business rules
-    config.applyTuning ();
-
+    config.set_listening_port(cfg.peerListeningPort);
     m_peerFinder->setConfig (config);
 
-    auto bootstrapIps (getConfig ().IPS);
+    auto bootstrapIps (cfg.IPS);
 
     // If no IPs are specified, use the Ripple Labs round robin
-    // pool to get some servers to insert into the boot cache. 
+    // pool to get some servers to insert into the boot cache.
     if (bootstrapIps.empty ())
         bootstrapIps.push_back ("r.ripple.com 51235");
 
@@ -373,7 +366,7 @@ OverlayImpl::onPrepare ()
     {
         m_resolver.resolve (bootstrapIps,
             [this](
-                std::string const& name, 
+                std::string const& name,
                 std::vector <beast::IP::Endpoint> const& addresses)
             {
                 std::vector <std::string> ips;
@@ -389,11 +382,11 @@ OverlayImpl::onPrepare ()
     }
 
     // Add the ips_fixed from the rippled.cfg file
-    if (! getConfig ().RUN_STANDALONE && !getConfig ().IPS_FIXED.empty ())
+    if (! cfg.RUN_STANDALONE && !cfg.IPS_FIXED.empty ())
     {
-        m_resolver.resolve (getConfig ().IPS_FIXED,
+        m_resolver.resolve (cfg.IPS_FIXED,
             [this](
-                std::string const& name, 
+                std::string const& name,
                 std::vector <beast::IP::Endpoint> const& addresses)
             {
                 if (!addresses.empty ())
@@ -403,22 +396,22 @@ OverlayImpl::onPrepare ()
 
     // Configure the peer doors, which allow the server to accept incoming
     // peer connections:
-    if (! getConfig ().RUN_STANDALONE)
+    if (! cfg.RUN_STANDALONE)
     {
         m_doorDirect = make_PeerDoor (
             PeerDoor::sslRequired,
             *this,
-            getConfig ().PEER_IP,
-            getConfig ().peerListeningPort,
+            cfg.PEER_IP,
+            cfg.peerListeningPort,
             m_io_service);
 
-        if (getConfig ().peerPROXYListeningPort != 0)
+        if (cfg.peerPROXYListeningPort != 0)
         {
             m_doorProxy = make_PeerDoor (
                 PeerDoor::sslAndPROXYRequired,
                 *this,
-                getConfig ().PEER_IP,
-                getConfig ().peerPROXYListeningPort,
+                cfg.PEER_IP,
+                cfg.peerPROXYListeningPort,
                 m_io_service);
         }
     }
@@ -430,7 +423,7 @@ OverlayImpl::onStart ()
 }
 
 /** Close all peer connections.
-    If `graceful` is true then active 
+    If `graceful` is true then active
     Requirements:
         Caller must hold the mutex.
 */
@@ -461,7 +454,7 @@ OverlayImpl::onStop ()
     // Take off the extra count we added in the constructor
     release();
 
-    close_all (false);       
+    close_all (false);
 }
 
 void
@@ -510,9 +503,9 @@ OverlayImpl::onPeerActivated (Peer::ptr const& peer)
         assert(result.second);
     }
 
-    m_journal.debug << 
+    m_journal.debug <<
         "activated " << peer->getRemoteAddress() <<
-        " (" << peer->getShortId() << 
+        " (" << peer->getShortId() <<
         ":" << RipplePublicKey(peer->getNodePublic()) << ")";
 
     // We just accepted this peer so we have non-zero active peers
@@ -586,7 +579,7 @@ make_Overlay (
     beast::Stoppable& parent,
     Resource::Manager& resourceManager,
     SiteFiles::Manager& siteFiles,
-    beast::File const& pathToDbFileOrDirectory, 
+    beast::File const& pathToDbFileOrDirectory,
     Resolver& resolver,
     boost::asio::io_service& io_service,
     boost::asio::ssl::context& ssl_context)

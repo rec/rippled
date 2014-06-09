@@ -38,7 +38,7 @@ public:
     CheckerAdapter m_checker;
     Logic m_logic;
     beast::DeadlineTimer m_secondsTimer;
-    
+
     //--------------------------------------------------------------------------
 
     ManagerImp (
@@ -74,7 +74,7 @@ public:
     //
     //--------------------------------------------------------------------------
 
-    void setConfig (Config const& config)
+    void setConfig (ConfigProto const& config)
     {
         m_queue.dispatch (
             m_context.wrap (
@@ -318,7 +318,7 @@ Manager* Manager::New (
     clock_type& clock,
     beast::Journal journal)
 {
-    return new ManagerImp (parent, siteFiles, databaseFile, 
+    return new ManagerImp (parent, siteFiles, databaseFile,
         callback, clock, journal);
 }
 

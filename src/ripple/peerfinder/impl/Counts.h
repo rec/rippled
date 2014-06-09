@@ -20,6 +20,7 @@
 #ifndef RIPPLE_PEERFINDER_COUNTS_H_INCLUDED
 #define RIPPLE_PEERFINDER_COUNTS_H_INCLUDED
 
+#include <ripple/peerfinder/api/Config.h>
 #include <ripple/peerfinder/api/Slot.h>
 
 namespace ripple {
@@ -125,28 +126,30 @@ public:
     //--------------------------------------------------------------------------
 
     /** Called when the config is set or changed. */
-    void onConfig (Config const& config)
+    void onConfig (ConfigProto const& config)
     {
         // Calculate the number of outbound peers we want. If we dont want or can't
         // accept incoming, this will simply be equal to maxPeers. Otherwise
         // we calculate a fractional amount based on percentages and pseudo-randomly
         // round up or down.
         //
-        if (config.wantIncoming)
+        auto maxPeers = getMaxPeers(config);
+        if (config.want_incoming())
         {
             // Round outPeers upwards using a Bernoulli distribution
-            m_out_max = std::floor (config.outPeers);
-            if (m_roundingThreshold < (config.outPeers - m_out_max))
+            auto outPeers = getOutPeers(config);
+            m_out_max = std::floor (outPeers);
+            if (m_roundingThreshold < (outPeers - m_out_max))
                 ++m_out_max;
         }
         else
         {
-            m_out_max = config.maxPeers;
+            m_out_max = maxPeers;
         }
 
         // Calculate the largest number of inbound connections we could take.
-        if (config.maxPeers >= m_out_max)
-            m_in_max = config.maxPeers - m_out_max;
+        if (maxPeers >= m_out_max)
+            m_in_max = maxPeers - m_out_max;
         else
             m_in_max = 0;
     }
@@ -315,7 +318,7 @@ private:
 
     /** Active outbound slots. */
     std::size_t m_out_active;
-    
+
     /** Fixed connections. */
     std::size_t m_fixed;
 

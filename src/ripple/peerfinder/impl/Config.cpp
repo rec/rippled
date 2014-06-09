@@ -20,37 +20,27 @@
 namespace ripple {
 namespace PeerFinder {
 
-Config::Config ()
-    : maxPeers (Tuning::defaultMaxPeers)
-    , outPeers (calcOutPeers ())
-    , wantIncoming (true)
-    , autoConnect (true)
-    , listeningPort (0)
+double getOutPeers (ConfigProto const& config)
 {
+    auto outPeers = config.max_peers() * config.out_percent() * 0.01;
+    return std::max (outPeers, double(config.min_out_count()));
 }
 
-double Config::calcOutPeers () const
+uint32 getMaxPeers (ConfigProto const& config)
 {
-    return std::max (
-        maxPeers * Tuning::outPercent * 0.01,
-            double (Tuning::minOutCount));
+    return std::max(config.max_peers(), config.min_out_count());
 }
 
-void Config::applyTuning ()
+void write (ConfigProto const& config, beast::PropertyStream::Map& map)
 {
-    if (maxPeers < Tuning::minOutCount)
-        maxPeers = Tuning::minOutCount;
-    outPeers = calcOutPeers ();
-}
-
-void Config::onWrite (beast::PropertyStream::Map &map)
-{
-    map ["max_peers"]       = maxPeers;
-    map ["out_peers"]       = outPeers;
-    map ["want_incoming"]   = wantIncoming;
-    map ["auto_connect"]    = autoConnect;
-    map ["port"]            = listeningPort;
-    map ["features"]        = features;
+    // TODO(tom): this would be automated using proto reflection in the final
+    // design.
+    map ["max_peers"]       = getMaxPeers(config);
+    map ["out_peers"]       = getOutPeers(config);
+    map ["want_incoming"]   = config.want_incoming();
+    map ["auto_connect"]    = config.auto_connect();
+    map ["port"]            = config.listening_port();
+    map ["features"]        = config.features();
 }
 
 }

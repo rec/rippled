@@ -478,6 +478,7 @@ default_target = None
 
 for source in [
     'src/ripple/proto/ripple.proto',
+    'src/ripple/proto/PeerFinderConfig.proto',
     ]:
     base.Protoc([],
         source,
@@ -538,7 +539,7 @@ for toolchain in toolchains:
 
         objects.append(addSource('src/ripple/unity/core.cpp', env, variant_dirs, [
             'src/leveldb/include',
-            #'src/hyperleveldb/include', # hyper 
+            #'src/hyperleveldb/include', # hyper
             'src/rocksdb/include',
             ]))
 

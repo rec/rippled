@@ -45,7 +45,7 @@ class Logic
 public:
     // Maps remote endpoints to slots. Since a slot has a
     // remote endpoint upon construction, this holds all counts.
-    // 
+    //
     typedef std::map <beast::IP::Endpoint,
         std::shared_ptr <SlotImp>> Slots;
 
@@ -81,7 +81,7 @@ public:
         beast::SharedPtr <Source> fetchSource;
 
         // Configuration settings
-        Config config;
+        ConfigProto config;
 
         // Slot counts and other aggregate statistics.
         Counts counts;
@@ -101,7 +101,7 @@ public:
         // The addresses (but not port) we are connected to. This includes
         // outgoing connection attempts. Note that this set can contain
         // duplicates (since the port is not set)
-        ConnectedAddresses connected_addresses; 
+        ConnectedAddresses connected_addresses;
 
         // Set of public keys belonging to active peers
         Keys keys;
@@ -140,7 +140,7 @@ public:
         , m_whenBroadcast (m_clock.now())
         , m_squelches (m_clock)
     {
-        setConfig (Config ());
+        setConfig (ConfigProto ());
     }
 
     // Load persistent state information from the Store
@@ -172,7 +172,7 @@ public:
     //
     //--------------------------------------------------------------------------
 
-    void setConfig (Config const& config)
+    void setConfig (ConfigProto const& config)
     {
         SharedState::Access state (m_state);
         state->config = config;
@@ -536,7 +536,7 @@ public:
             ((list.size() > 1) ? " entries" : " entry");
 
         SharedState::Access state (m_state);
-   
+
         // The object must exist in our table
         assert (state->slots.find (slot->remote_endpoint ()) !=
             state->slots.end ());
@@ -567,7 +567,7 @@ public:
                         "Logic testing " << ep.address << " already in progress";
                     continue;
                 }
-                
+
                 if (! slot->checked)
                 {
                     // Mark that a check for this slot is now in progress.
@@ -575,7 +575,7 @@ public:
 
                     // Test the slot's listening port before
                     // adding it to the livecache for the first time.
-                    //                     
+                    //
                     m_checker.async_test (ep.address, bind (
                         &Logic::checkComplete, this, slot->remote_endpoint (),
                             ep.address, beast::_1));
@@ -587,7 +587,7 @@ public:
 
                     continue;
                 }
- 
+
                 // If they failed the test then skip the address
                 if (! slot->canAccept)
                     continue;
@@ -814,7 +814,7 @@ public:
         // Only proceed if auto connect is enabled and we
         // have less than the desired number of outbound slots
         //
-        if (! state->config.autoConnect ||
+        if (! state->config.auto_connect() ||
             state->counts.out_active () >= state->counts.out_max ())
             return;
 
@@ -946,7 +946,7 @@ public:
     int addBootcacheAddresses (IPAddresses const& list)
     {
         int count (0);
-        SharedState::Access state (m_state);        
+        SharedState::Access state (m_state);
         for (auto addr : list)
         {
             if (addBootcacheAddress (addr, state))
@@ -1068,7 +1068,7 @@ public:
                     targets.emplace_back (slot);
                 });
         }
-        
+
         /* VFALCO NOTE
             This is a temporary measure. Once we know our own IP
             address, the correct solution is to put it into the Livecache
@@ -1081,14 +1081,14 @@ public:
         // 2. We have slots
         // 3. We haven't failed the firewalled test
         //
-        if (state->config.wantIncoming &&
+        if (state->config.want_incoming() &&
             state->counts.inboundSlots() > 0)
         {
             Endpoint ep;
             ep.hops = 0;
             ep.address = beast::IP::Endpoint (
                 beast::IP::AddressV4 ()).at_port (
-                    state->config.listeningPort);
+                    state->config.listening_port());
             for (auto& t : targets)
                 t.insert (ep);
         }
@@ -1105,7 +1105,7 @@ public:
             SlotImp::ptr const& slot (t.slot());
             auto const& list (t.list());
             if (m_journal.trace) m_journal.trace << beast::leftw (18) <<
-                "Logic sending " << slot->remote_endpoint() << 
+                "Logic sending " << slot->remote_endpoint() <<
                 " with " << list.size() <<
                 ((list.size() == 1) ? " endpoint" : " endpoints");
             m_callback.send (slot, list);
@@ -1133,7 +1133,7 @@ public:
                 item ["fixed"]      = "yes";
             if (slot.cluster())
                 item ["cluster"]    = "yes";
-            
+
             item ["state"] = stateString (slot.state());
         }
     }
@@ -1160,7 +1160,7 @@ public:
 
         {
             beast::PropertyStream::Map child ("config", map);
-            state->config.onWrite (child);
+            write(state->config, child);
         }
 
         {

@@ -1,0 +1,14 @@
+package ripple.PeerFinder;
+
+message ConfigProto {
+    optional uint32 max_peers = 1 [default = 21];
+    optional double out_peers = 2;
+    optional bool want_incoming = 3 [default = true];
+    optional bool auto_connect = 4 [default = true];
+    optional uint32 listening_port = 5;
+    optional string features = 6;
+    optional uint32 min_out_count = 7 [default = 10];
+    optional double out_percent = 8 [default = 15.0];
+    optional double seconds_per_connect = 9 [default = 10.0];
+    optional uint32 max_connect_attempts = 10 [default = 20];
+};
