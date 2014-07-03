@@ -22,6 +22,7 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <ripple/basics/types/Status.h>
 #include <ripple/module/app/paths/CalcState.h>
 #include <ripple/module/app/paths/QualityConstraint.h>
 #include <ripple/module/app/paths/RippleCalc.h>

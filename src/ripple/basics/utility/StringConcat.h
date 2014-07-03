@@ -44,12 +44,28 @@ struct ConcatArg {
     {
     }
 
+    char const* data() const { return data_; }
+    std::size_t size() const { return size_; }
+
     std::string string_;
     char const* data_;
     std::size_t size_;
 };
 
 } // namespace detail
+
+template <typename List>
+inline std::string listConcat(List const& args) {
+    int capacity = 0;
+    for (auto const& a: args)
+        capacity += a.size();
+
+    std::string result;
+    result.reserve(capacity);
+    for (auto const& a: args)
+        result.append(a.data(), a.data() + a.size());
+    return result;
+}
 
 /** Concatenate strings, numbers, bools and chars into one string in O(n) time.
 
@@ -59,17 +75,9 @@ struct ConcatArg {
     Returns:
       "hello 23xtrue"
  */
-inline std::string stringConcat(std::vector<detail::ConcatArg> args)
+inline std::string stringConcat(std::vector<detail::ConcatArg> const& args)
 {
-    int capacity = 0;
-    for (auto const& a: args)
-        capacity += a.size_;
-
-    std::string result;
-    result.reserve(capacity);
-    for (auto const& a: args)
-        result.append(a.data_, a.data_ + a.size_);
-    return result;
+    return listConcat(args);
 }
 
 } // ripple
