@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2014 Ripple Labs Inc.
+    Copyright (c) 2012, 2013 Ripple Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,38 +17,34 @@
 */
 //==============================================================================
 
+#ifndef RIPPLE_APP_RPC_INTERNAL_HANDLER
+#define RIPPLE_APP_RPC_INTERNAL_HANDLER
 
 namespace ripple {
+namespace RPC {
 
-#if 0
-// XXX Needs to be revised for new paradigm nickname_info <nickname> Note:
-// Nicknames are not automatically looked up by commands as they are advisory
-// and can be changed.
-Json::Value doNicknameInfo (Json::Value params)
+/** To dynamically add custom or experimental RPC handlers, construct a new
+ * instance of InternalHandler with your own handler function. */
+struct InternalHandler
 {
-    std::string strNickname = context.params_[0u].asString ();
-    boost::trim (strNickname);
+    typedef Json::Value (*handler_t) (const Json::Value&);
 
-    if (strNickname.empty ())
+    InternalHandler (const std::string& name, handler_t handler)
+            : name_ (name),
+              handler_ (handler)
     {
-        return rpcError (rpcNICKNAME_MALFORMED);
+        nextHandler_ = InternalHandler::headHandler;
+        InternalHandler::headHandler = this;
     }
 
-    auto nsSrc = context.netOps_.getNicknameState (uint256 (0), strNickname);
+    InternalHandler* nextHandler_;
+    std::string name_;
+    handler_t handler_;
 
-    if (!nsSrc)
-    {
-        return rpcError (rpcNICKNAME_MISSING);
-    }
+    static InternalHandler* headHandler;
+};
 
-    Json::Value ret (Json::objectValue);
-
-    ret["nickname"] = strNickname;
-
-    nsSrc->addJson (ret);
-
-    return ret;
-}
-#endif
-
+} // RPC
 } // ripple
+
+#endif

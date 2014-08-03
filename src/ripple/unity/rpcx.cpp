@@ -53,6 +53,7 @@
 #include <ripple/module/rpc/handlers/Feature.cpp>
 #include <ripple/module/rpc/handlers/FetchInfo.cpp>
 #include <ripple/module/rpc/handlers/GetCounts.cpp>
+#include <ripple/module/rpc/handlers/Internal.cpp>
 #include <ripple/module/rpc/handlers/Ledger.cpp>
 #include <ripple/module/rpc/handlers/LedgerAccept.cpp>
 #include <ripple/module/rpc/handlers/LedgerCleaner.cpp>
@@ -64,13 +65,11 @@
 #include <ripple/module/rpc/handlers/LedgerRequest.cpp>
 #include <ripple/module/rpc/handlers/LogLevel.cpp>
 #include <ripple/module/rpc/handlers/LogRotate.cpp>
-#include <ripple/module/rpc/handlers/NicknameInfo.cpp>
 #include <ripple/module/rpc/handlers/OwnerInfo.cpp>
 #include <ripple/module/rpc/handlers/PathFind.cpp>
 #include <ripple/module/rpc/handlers/Peers.cpp>
 #include <ripple/module/rpc/handlers/Ping.cpp>
 #include <ripple/module/rpc/handlers/Print.cpp>
-#include <ripple/module/rpc/handlers/Profile.cpp>
 #include <ripple/module/rpc/handlers/ProofCreate.cpp>
 #include <ripple/module/rpc/handlers/ProofSolve.cpp>
 #include <ripple/module/rpc/handlers/ProofVerify.cpp>

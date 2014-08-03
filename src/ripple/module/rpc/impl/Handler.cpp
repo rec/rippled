@@ -26,18 +26,18 @@ namespace {
 
 class HandlerTable {
   public:
-    HandlerTable(std::vector<Handler> const& entries) {
+    HandlerTable(std::vector<HandlerDesc> const& entries) {
         for (auto& entry: entries)
             table_[entry.name_] = entry;
     }
 
-    const Handler* getHandler(std::string name) {
+    const HandlerDesc* getHandler(std::string name) {
         auto i = table_.find(name);
         return i == table_.end() ? nullptr : &i->second;
     }
 
   private:
-    std::map<std::string, Handler> table_;
+    std::map<std::string, HandlerDesc> table_;
 };
 
 HandlerTable HANDLERS({
@@ -66,13 +66,11 @@ HandlerTable HANDLERS({
     {   "ledger_request",       &doLedgerRequest,       Config::ADMIN,   NO_CONDITION     },
     {   "log_level",            &doLogLevel,            Config::ADMIN,   NO_CONDITION     },
     {   "logrotate",            &doLogRotate,           Config::ADMIN,   NO_CONDITION     },
-//      {   "nickname_info",        &doNicknameInfo,        Config::USER,  NEEDS_CURRENT_LEDGER  },
     {   "owner_info",           &doOwnerInfo,           Config::USER,  NEEDS_CURRENT_LEDGER  },
     {   "peers",                &doPeers,               Config::ADMIN,   NO_CONDITION     },
     {   "path_find",            &doPathFind,            Config::USER,  NEEDS_CURRENT_LEDGER  },
     {   "ping",                 &doPing,                Config::USER,  NO_CONDITION     },
     {   "print",                &doPrint,               Config::ADMIN,   NO_CONDITION     },
-//      {   "profile",              &doProfile,             Config::USER,  NEEDS_CURRENT_LEDGER  },
     {   "proof_create",         &doProofCreate,         Config::ADMIN,   NO_CONDITION     },
     {   "proof_solve",          &doProofSolve,          Config::ADMIN,   NO_CONDITION     },
     {   "proof_verify",         &doProofVerify,         Config::ADMIN,   NO_CONDITION     },
@@ -107,7 +105,7 @@ HandlerTable HANDLERS({
 
 } // namespace
 
-const Handler* getHandler(std::string name) {
+const HandlerDesc* getHandler(std::string name) {
     return HANDLERS.getHandler(name);
 }
 

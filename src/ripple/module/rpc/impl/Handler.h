@@ -33,7 +33,7 @@ enum Condition {
     NEEDS_CLOSED_LEDGER   = 4 + NEEDS_NETWORK_CONNECTION,
 };
 
-struct Handler
+struct HandlerDesc
 {
     typedef Json::Value (*Method) (Context&);
 
@@ -43,7 +43,7 @@ struct Handler
     RPC::Condition condition_;
 };
 
-const Handler* getHandler(std::string name);
+const HandlerDesc* getHandler(std::string name);
 
 } // RPC
 } // ripple

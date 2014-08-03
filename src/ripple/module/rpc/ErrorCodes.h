@@ -138,21 +138,21 @@ struct ErrorInfo
 ErrorInfo const& get_error_info (error_code_i code);
 
 /** Add or update the json update to reflect the error code. */
-/** @{ */
 void inject_error (error_code_i code, Json::Value& json);
+
 inline void inject_error (int code, Json::Value& json)
-    { inject_error (error_code_i (code), json); }
-void inject_error (error_code_i code, std::string const& message, Json::Value& json);
-/** @} */
+{
+    inject_error (error_code_i (code), json);
+}
+
+void inject_error (
+    error_code_i code, std::string const& message, Json::Value& json);
 
 /** Returns a new json object that reflects the error code. */
-/** @{ */
 Json::Value make_error (error_code_i code);
 Json::Value make_error (error_code_i code, std::string const& message);
-/** @} */
 
 /** Returns a new json object that indicates invalid parameters. */
-/** @{ */
 inline Json::Value make_param_error (std::string const& message)
 {
     return make_error (rpcINVALID_PARAMS, message);
@@ -199,8 +199,6 @@ inline Json::Value expected_field_error (
 {
     return make_param_error (expected_field_message (name, type));
 }
-
-/** @} */
 
 /** Returns `true` if the json contains an rpc error specification. */
 bool contains_error (Json::Value const& json);

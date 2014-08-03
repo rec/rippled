@@ -60,8 +60,8 @@ public:
         {
             m_context.reset (RippleSSLContext::createAuthenticated (
                 getConfig ().RPC_SSL_KEY,
-                    getConfig ().RPC_SSL_CERT,
-                        getConfig ().RPC_SSL_CHAIN));
+                getConfig ().RPC_SSL_CERT,
+                getConfig ().RPC_SSL_CHAIN));
         }
     }
 
@@ -75,7 +75,7 @@ public:
         if (! getConfig ().getRpcIP().empty () &&
               getConfig ().getRpcPort() != 0)
         {
-            beast::IP::Endpoint ep (beast::IP::Endpoint::from_string (getConfig().getRpcIP()));
+            auto ep = beast::IP::Endpoint::from_string (getConfig().getRpcIP());
 
             // VFALCO TODO IP address should not have an "unspecified" state
             //if (! is_unspecified (ep))
@@ -144,18 +144,11 @@ public:
             return;
         }
 
-#if 0
-        // Synchronous version that doesn't use job queue
-        Job job;
-        processSession (job, session);
-
-#else
         session.detach();
 
         m_jobQueue.addJob (jtCLIENT, "RPC-Client", std::bind (
             &RPCHTTPServerImp::processSession, this, std::placeholders::_1,
                 std::ref (session)));
-#endif
     }
 
     void onClose (HTTP::Session& session, int errorCode)
@@ -171,14 +164,8 @@ public:
 
     void processSession (Job& job, HTTP::Session& session)
     {
-#if 0
-        // Goes through the old code
-        session.write (m_deprecatedHandler.processRequest (
-            session.content(), session.remoteAddress().at_port(0)));
-#else
         session.write (processRequest (session.content(),
             session.remoteAddress().at_port(0)));
-#endif
 
         session.close();
     }
@@ -208,7 +195,7 @@ public:
             }
         }
 
-        Config::Role const role (getConfig ().getAdminRole (jvRequest, remoteIPAddress));
+        auto role = getConfig ().getAdminRole (jvRequest, remoteIPAddress);
 
         Resource::Consumer usage;
 
@@ -222,34 +209,30 @@ public:
 
         // Parse id now so errors from here on will have the id
         //
-        // VFALCO NOTE Except that "id" isn't included in the following errors...
+        // VFALCO NOTE Except that "id" isn't included in the following errors.
         //
         Json::Value const id = jvRequest ["id"];
 
         Json::Value const method = jvRequest ["method"];
 
         if (method.isNull ())
-        {
             return createResponse (400, "Null method");
-        }
-        else if (! method.isString ())
-        {
+
+        if (! method.isString ())
             return createResponse (400, "method is not string");
-        }
 
         std::string strMethod = method.asString ();
+        if (strMethod.empty())
+            return createResponse (400, "method is empty");
 
         // Parse params
         Json::Value params = jvRequest ["params"];
 
         if (params.isNull ())
-        {
             params = Json::Value (Json::arrayValue);
-        }
+
         else if (!params.isArray ())
-        {
             return HTTPReply (400, "params unparseable");
-        }
 
         // VFALCO TODO Shouldn't we handle this earlier?
         //
@@ -261,20 +244,19 @@ public:
             return HTTPReply (403, "Forbidden");
         }
 
+
         std::string response;
+        RPCHandler rpcHandler (m_networkOPs);
+        Resource::Charge loadType = Resource::feeReferenceRPC;
 
         m_journal.debug << "Query: " << strMethod << params;
 
-        RPCHandler rpcHandler (m_networkOPs);
-
-        Resource::Charge loadType = Resource::feeReferenceRPC;
-
         Json::Value const result (rpcHandler.doRpcCommand (
             strMethod, params, role, loadType));
+        m_journal.debug << "Reply: " << result;
 
         usage.charge (loadType);
 
-        m_journal.debug << "Reply: " << result;
 
         response = JSONRPCReply (result, Json::Value (), id);
 
@@ -291,13 +273,15 @@ RPCHTTPServer::RPCHTTPServer (Stoppable& parent)
 
 //------------------------------------------------------------------------------
 
-RPCHTTPServer* RPCHTTPServer::New (Stoppable& parent,
-                                   beast::Journal journal,
-                                   JobQueue& jobQueue,
-                                   NetworkOPs& networkOPs,
-                                   Resource::Manager& resourceManager)
+RPCHTTPServer* RPCHTTPServer::New (
+    Stoppable& parent,
+    beast::Journal journal,
+    JobQueue& jobQueue,
+    NetworkOPs& networkOPs,
+    Resource::Manager& resourceManager)
 {
-    return new RPCHTTPServerImp (parent, journal, jobQueue, networkOPs, resourceManager);
+    return new RPCHTTPServerImp (
+        parent, journal, jobQueue, networkOPs, resourceManager);
 }
 
 }
