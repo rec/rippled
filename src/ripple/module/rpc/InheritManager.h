@@ -17,60 +17,54 @@
 */
 //==============================================================================
 
-#include <beast/cxx14/memory.h>
+#ifndef RIPPLE_RPC_INHERIT_MANAGER_H_INCLUDED
+#define RIPPLE_RPC_INHERIT_MANAGER_H_INCLUDED
 
-#include <ripple/module/rpc/Manager.h>
-#include <ripple/module/rpc/impl/DoPrint.h>
+#include <ripple/module/rpc/HelpDetail.h>
+#include <ripple/module/rpc/Request.h>
 
 namespace ripple {
 namespace RPC {
 
-class ManagerImp : public Manager
+class InheritManager
 {
 public:
-    typedef hash_map <std::string, handler_type> Map;
+    class Handler {
+      public:
+        virtual void handle (Request&) const = 0;
+        virtual std::string help (HelpDetail) const = 0;
+        virtual ~Handler() {}
 
-    beast::Journal m_journal;
-    Map m_map;
+        using Ptr = std::unique_ptr <Handler>;
+    };
 
-    ManagerImp (beast::Journal journal)
-        : m_journal (journal)
+    // HandleType needs to be an instance of Handler.
+    template <typename HandlerType>
+    void add (std::string const& name)
     {
+        map_[name] = std::make_unique<HandlerType>();
     }
 
-    void add (std::string const& method, handler_type&& handler)
+    const Handler* get(std::string const& name) const
     {
-        m_map.emplace (std::piecewise_construct,
-                       std::forward_as_tuple (method),
-                       std::forward_as_tuple (std::move (handler)));
+        auto i = map_.find(name);
+        return i == map_.end() ? nullptr : i->second.get();
     }
 
-    bool dispatch (Request& req)
-    {
-        Map::const_iterator const iter (m_map.find (req.method));
-        if (iter == m_map.end())
-            return false;
-        iter->second (req);
-        return true;
-    }
+  private:
+    std::map <std::string, Handler::Ptr> map_;
 };
 
-//------------------------------------------------------------------------------
-
-Manager::~Manager ()
+inline std::unique_ptr <InheritManager> makeInheritManager()
 {
-}
-
-std::unique_ptr <Manager> make_Manager (beast::Journal journal)
-{
-    std::unique_ptr <Manager> m (std::make_unique <ManagerImp> (journal));
-
-#ifdef USE_ORIGINAL
-    m->add <DoPrint> ("print");
+    auto result = std::make_unique <InheritManager>();
+#ifdef USE_INHERIT
+    result->add<DoPrint> ();
 #endif
-
-    return m;
+    return std::move (result);
 }
 
-}
-}
+} // RPC
+} // ripple
+
+#endif

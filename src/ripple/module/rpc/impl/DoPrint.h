@@ -20,32 +20,83 @@
 #ifndef RIPPLE_RPC_PRINT_H_INCLUDED
 #define RIPPLE_RPC_PRINT_H_INCLUDED
 
+#include <ripple/module/rpc/FunctionManager.h>
+#include <ripple/module/rpc/Manager.h>
+#include <ripple/module/rpc/InheritManager.h>
+
 namespace ripple {
 namespace RPC {
 
+void handlePrint (Request&);
+std::string helpPrint (HelpDetail);
+
+// 1. existing code (no "help").
 class DoPrint
 {
 public:
     void operator() (Request& req)
     {
-        JsonPropertyStream stream;
-
-        if (req.params.isObject() &&
-            req.params["params"].isArray() &&
-            req.params["params"][0u].isString ())
-        {
-            req.app.write (stream, req.params["params"][0u].asString());
-        }
-        else
-        {
-            req.app.write (stream);
-        }
-
-        req.result = stream.top();
+        handlePrint(req);
     }
 };
 
+// 2. functional.
+class DoPrintFunction
+{
+public:
+    void handle (Request& req)
+    {
+        handlePrint (req);
+    }
+
+    std::string help (HelpDetail d)
+    {
+        return helpPrint (d);
+    }
+
+};
+
+// 3. inheritance.
+class DoPrintInherit : public InheritManager::Handler
+{
+public:
+    void handle (Request& req) const override
+    {
+        handlePrint (req);
+    }
+
+    std::string help (HelpDetail d) const override
+    {
+        return helpPrint (d);
+    }
+};
+
+enum class PrintSelector {original, function, inherit};
+
+inline void handlePrint (Request& req)
+{
+    JsonPropertyStream stream;
+
+    if (req.params.isObject() &&
+        req.params["params"].isArray() &&
+        req.params["params"][0u].isString ())
+    {
+        req.app.write (stream, req.params["params"][0u].asString());
+    }
+    else
+    {
+        req.app.write (stream);
+    }
+
+    req.result = stream.top();
 }
+
+inline std::string helpPrint (HelpDetail)
+{
+    return "Help me, Obi-Wan Kenobe! You're my only hope.";
 }
+
+} // RPC
+} // ripple
 
 #endif

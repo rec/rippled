@@ -25,6 +25,8 @@
 #include <ripple/module/app/main/Tuning.h>
 #include <ripple/module/app/misc/ProofOfWorkFactory.h>
 #include <ripple/module/rpc/Manager.h>
+#include <ripple/module/rpc/FunctionManager.h>
+#include <ripple/module/rpc/InheritManager.h>
 #include <ripple/nodestore/Database.h>
 #include <ripple/nodestore/DummyScheduler.h>
 #include <ripple/nodestore/Manager.h>
@@ -162,6 +164,10 @@ public:
     IoServicePool m_mainIoPool;
     std::unique_ptr <SiteFiles::Manager> m_siteFiles;
     std::unique_ptr <RPC::Manager> m_rpcManager;
+
+    std::unique_ptr <RPC::FunctionManager> functionManager_;
+    std::unique_ptr <RPC::InheritManager> inheritManager_;
+
     // VFALCO TODO Make OrderBookDB abstract
     OrderBookDB m_orderBookDB;
     std::unique_ptr <PathRequests> m_pathRequests;
@@ -280,6 +286,10 @@ public:
 
         , m_rpcManager (RPC::make_Manager (m_logs.journal("RPCManager")))
 
+        , functionManager_ (RPC::makeFunctionManager ())
+
+        , inheritManager_ (RPC::makeInheritManager ())
+
         , m_orderBookDB (*m_jobQueue)
 
         , m_pathRequests (new PathRequests (
@@ -387,6 +397,16 @@ public:
     RPC::Manager& getRPCManager ()
     {
         return *m_rpcManager;
+    }
+
+    RPC::FunctionManager& getRPCFunctionManager ()
+    {
+        return *functionManager_;
+    }
+
+    RPC::InheritManager& getRPCInheritManager ()
+    {
+        return *inheritManager_;
     }
 
     SiteFiles::Manager& getSiteFiles()

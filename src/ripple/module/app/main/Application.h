@@ -29,6 +29,8 @@ namespace Validators { class Manager; }
 namespace Resource { class Manager; }
 namespace NodeStore { class Database; }
 namespace RPC { class Manager; }
+namespace RPC { class FunctionManager; }
+namespace RPC { class InheritManager; }
 
 // VFALCO TODO Fix forward declares required for header dependency loops
 class CollectorManager;
@@ -91,6 +93,8 @@ public:
     virtual FullBelowCache&         getFullBelowCache () = 0;
     virtual JobQueue&               getJobQueue () = 0;
     virtual RPC::Manager&           getRPCManager () = 0;
+    virtual RPC::FunctionManager&   getRPCFunctionManager () = 0;
+    virtual RPC::InheritManager&    getRPCInheritManager () = 0;
     virtual SiteFiles::Manager&     getSiteFiles () = 0;
     virtual NodeCache&              getTempNodeCache () = 0;
     virtual TreeNodeCache&          getTreeNodeCache () = 0;

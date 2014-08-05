@@ -145,6 +145,23 @@ std::string RPCServerHandler::processRequest (
             return createResponse (200,
                 JSONRPCReply (req.result, Json::Value (), id));
         }
+        if (getApp().getRPCFunctionManager().handle(req.method, req))
+        {
+            usage.charge (req.fee);
+            WriteLog (lsDEBUG, RPCServer) << "Reply: " << req.result;
+            return createResponse (200,
+                JSONRPCReply (req.result, Json::Value (), id));
+        }
+
+        auto handler = getApp().getRPCInheritManager().get(req.method);
+        if (handler)
+        {
+            handler->handle(req);
+            usage.charge (req.fee);
+            WriteLog (lsDEBUG, RPCServer) << "Reply: " << req.result;
+            return createResponse (200,
+                JSONRPCReply (req.result, Json::Value (), id));
+        }
     }
 
     // legacy dispatcher
