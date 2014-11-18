@@ -53,6 +53,7 @@ enum LedgerStateParms
 #define LEDGER_JSON_DUMP_STATE  0x2
 #define LEDGER_JSON_EXPAND      0x4
 #define LEDGER_JSON_FULL        0x8
+#define LEDGER_JSON_BINARY      0x10
 
 class SqliteStatement;
 
