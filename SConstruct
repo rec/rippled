@@ -242,7 +242,7 @@ def config_base(env):
         env.Append(LIBPATH=[os.path.join(profile_jemalloc, 'lib')])
         env.Append(CPPPATH=[os.path.join(profile_jemalloc, 'include')])
         env.Append(LINKFLAGS=['-Wl,-rpath,' + os.path.join(profile_jemalloc, 'lib')])
-    env.Append(CPPPATH='src/gtest/include')
+    env.Append(CPPPATH='src/gtest/fused-src')
 
 # Set toolchain and variant specific construction variables
 def config_env(toolchain, variant, env):
@@ -649,8 +649,7 @@ for toolchain in all_toolchains:
         )
 
         object_builder.add_source_files(
-            'src/gtest/src/gtest-all.cc',
-            CPPPATH='src/gtest')
+            'src/gtest/fused-src/gtest/gtest-all.cc')
 
         if toolchain == "clang" and Beast.system.osx:
             object_builder.add_source_files('beastobjc.mm')

@@ -208,6 +208,15 @@
     <Filter Include="build\proto">
       <UniqueIdentifier>{5D2BC8F1-FF8F-3CCC-7292-795D59EB927A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gtest">
+      <UniqueIdentifier>{A55D9487-D19F-2102-BB58-043755ACE18D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gtest\fused-src">
+      <UniqueIdentifier>{BF10CBF9-BACB-D7DC-4457-61725B5ECA1E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gtest\fused-src\gtest">
+      <UniqueIdentifier>{8E5A0A13-78B0-D884-E866-75F55016025E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="hyperleveldb">
       <UniqueIdentifier>{5536F5D2-F4A4-3648-B43C-F95CBA3FC635}</UniqueIdentifier>
     </Filter>
@@ -1697,6 +1706,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\beast\beast\weak_fn.h">
       <Filter>beast</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\src\gtest\fused-src\gtest\gtest-all.cc">
+      <Filter>gtest\fused-src\gtest</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\src\gtest\fused-src\gtest\gtest.h">
+      <Filter>gtest\fused-src\gtest</Filter>
     </ClInclude>
     <ClCompile Include="..\..\src\hyperleveldb\db\builder.cc">
       <Filter>hyperleveldb\db</Filter>
@@ -3954,6 +3969,9 @@
     <ClCompile Include="..\..\src\ripple\rpc\handlers\Ledger.cpp">
       <Filter>ripple\rpc\handlers</Filter>
     </ClCompile>
+    <ClInclude Include="..\..\src\ripple\rpc\handlers\Ledger.h">
+      <Filter>ripple\rpc\handlers</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\src\ripple\rpc\handlers\LedgerAccept.cpp">
       <Filter>ripple\rpc\handlers</Filter>
     </ClCompile>
@@ -4183,6 +4201,9 @@
       <Filter>ripple\rpc\impl</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ripple\rpc\impl\Yield.cpp">
+      <Filter>ripple\rpc\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ripple\rpc\impl\Yield.test.cpp">
       <Filter>ripple\rpc\impl</Filter>
     </ClCompile>
     <ClInclude Include="..\..\src\ripple\rpc\InternalHandler.h">
