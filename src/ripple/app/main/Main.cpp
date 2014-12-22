@@ -28,6 +28,7 @@
 #include <beast/unit_test.h>
 #include <beast/streams/debug_ostream.h>
 #include <boost/program_options.hpp>
+#include <gtest/gtest.h>
 
 #if defined(BEAST_LINUX) || defined(BEAST_MAC) || defined(BEAST_BSD)
 #include <sys/resource.h>
@@ -165,6 +166,9 @@ runUnitTests(std::string const& pattern, std::string const& argument)
 
 int run (int argc, char** argv)
 {
+    // Initialize the Google tests and remove gtest-specific options.
+    ::testing::InitGoogleTest(&argc, argv);
+
     // Make sure that we have the right OpenSSL and Boost libraries.
     version::checkLibraryVersions();
 
@@ -291,7 +295,9 @@ int run (int argc, char** argv)
         if (vm.count("unittest-arg"))
             argument = vm["unittest-arg"].as<std::string>();
 
-        return runUnitTests(vm["unittest"].as<std::string>(), argument);
+        int ec1 = runUnitTests(vm["unittest"].as<std::string>(), argument);
+        int ec2 = ::testing::UnitTest::GetInstance()->Run();
+        return ec1 ? ec1 : ec2;
     }
 
     if (!iResult)

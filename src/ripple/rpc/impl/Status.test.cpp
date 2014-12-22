@@ -18,77 +18,66 @@
 //==============================================================================
 
 #include <ripple/rpc/Status.h>
-#include <beast/unit_test/suite.h>
+#include <ripple/rpc/impl/TestOutputSuite.h>
+#include <gtest/gtest.h>
 
 namespace ripple {
 namespace RPC {
+namespace detail {
 
-class codeString_test : public beast::unit_test::suite
+template <class Type>
+std::string codeString (Type t)
 {
-private:
-    template <typename Type>
-    std::string codeString (Type t)
+    return Status (t).codeString();
+}
+
+TEST (StatusTest, OK)
+{
     {
-        return Status (t).codeString();
+        auto s = codeString (Status ());
+        EXPECT_TRUE (s.empty()) << "String for OK status";
     }
 
-    void test_OK ()
     {
-        testcase ("OK");
-        {
-            auto s = codeString (Status ());
-            expect (s.empty(), "String for OK status");
-        }
-
-        {
-            auto s = codeString (Status::OK);
-            expect (s.empty(), "String for OK status");
-        }
-
-        {
-            auto s = codeString (0);
-            expect (s.empty(), "String for 0 status");
-        }
-
-        {
-            auto s = codeString (tesSUCCESS);
-            expect (s.empty(), "String for tesSUCCESS");
-        }
-
-        {
-            auto s = codeString (rpcSUCCESS);
-            expect (s.empty(), "String for rpcSUCCESS");
-        }
+        auto s = codeString (Status::OK);
+        EXPECT_TRUE (s.empty()) << "String for OK status";
     }
 
-    void test_error ()
     {
-        testcase ("error");
-        {
-            auto s = codeString (23);
-            expect (s == "23", s);
-        }
-
-        {
-            auto s = codeString (temBAD_AMOUNT);
-            expect (s == "temBAD_AMOUNT: Can only send positive amounts.", s);
-        }
-
-        {
-            auto s = codeString (rpcBAD_SYNTAX);
-            expect (s == "badSyntax: Syntax error.", s);
-        }
+        auto s = codeString (0);
+        EXPECT_TRUE (s.empty()) << "String for 0 status";
     }
 
-public:
-    void run()
     {
-        test_OK ();
-        test_error ();
+        auto s = codeString (tesSUCCESS);
+        EXPECT_TRUE (s.empty()) << "String for tesSUCCESS";
     }
-};
 
-BEAST_DEFINE_TESTSUITE (codeString, Status, RPC);
+    {
+        auto s = codeString (rpcSUCCESS);
+        EXPECT_TRUE (s.empty()) << "String for rpcSUCCESS";
+    }
+}
+
+TEST (StatusTest, Error)
+{
+    {
+        auto s = codeString (23);
+        EXPECT_EQ (s, "23");
+    }
+
+    {
+        auto s = codeString (temBAD_AMOUNT);
+        EXPECT_EQ (s, "temBAD_AMOUNT: Can only send positive amounts.");
+    }
+
+    {
+        auto s = codeString (rpcBAD_SYNTAX);
+        EXPECT_EQ (s, "badSyntax: Syntax error.");
+    }
+}
+
+} // detail
 
 class fillJson_test : public beast::unit_test::suite
 {
