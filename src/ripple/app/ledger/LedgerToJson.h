@@ -116,7 +116,7 @@ void fillJson (Object& json, LedgerFill const& fill)
     auto &transactionMap = ledger.peekTransactionMap();
     if (transactionMap && (bFull || fill.options & LEDGER_JSON_DUMP_TXRP))
     {
-        auto&& txns = RPC::addArray (json, jss::transactions);
+        auto&& txns = RPC::setArray (json, jss::transactions);
         SHAMapTreeNode::TNType type;
 
         RPC::CountedYield count (
@@ -161,7 +161,7 @@ void fillJson (Object& json, LedgerFill const& fill)
     auto& accountStateMap = ledger.peekAccountStateMap();
     if (accountStateMap && (bFull || fill.options & LEDGER_JSON_DUMP_STATE))
     {
-        auto&& array = RPC::addArray (json, jss::accountState);
+        auto&& array = RPC::setArray (json, jss::accountState);
         RPC::CountedYield count (
             fill.yieldStrategy.accountYieldCount, fill.yield);
         if (bFull || bExpand)
