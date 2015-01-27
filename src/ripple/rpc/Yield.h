@@ -20,7 +20,7 @@
 #ifndef RIPPLED_RIPPLE_RPC_YIELD_H
 #define RIPPLED_RIPPLE_RPC_YIELD_H
 
-#include <ripple/rpc/Output.h>
+#include <ripple/json/Output.h>
 #include <boost/coroutine/all.hpp>
 #include <functional>
 
@@ -49,8 +49,8 @@ using Yield = std::function <void ()>;
     data.  This is to avoid the case where you yield after outputting data, but
     then never send more data.
  */
-Output chunkedYieldingOutput (
-    Output const&, Yield const&, std::size_t chunkSize);
+Json::Output chunkedYieldingOutput (
+    Json::Output const&, Yield const&, std::size_t chunkSize);
 
 /** Yield every yieldCount calls.  If yieldCount is 0, never yield. */
 class CountedYield

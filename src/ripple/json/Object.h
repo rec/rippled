@@ -20,10 +20,10 @@
 #ifndef RIPPLED_RIPPLE_RPC_IMPL_JSONCOLLECTIONS_H
 #define RIPPLED_RIPPLE_RPC_IMPL_JSONCOLLECTIONS_H
 
-#include <ripple/rpc/impl/JsonWriter.h>
+#include <ripple/json/Writer.h>
+#include <beast/cxx14/memory.h>
 
-namespace ripple {
-namespace RPC {
+namespace Json {
 
 /**
     Collection is a base class for Array and Object, classes which provide the
@@ -489,7 +489,6 @@ Object appendObject (Array& json)
     return json.appendObject ();
 }
 
-} // RPC
-} // ripple
+} // Json
 
 #endif

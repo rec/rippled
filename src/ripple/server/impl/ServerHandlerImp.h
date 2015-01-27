@@ -21,9 +21,9 @@
 #define RIPPLE_SERVER_SERVERHANDLERIMP_H_INCLUDED
 
 #include <ripple/core/Job.h>
+#include <ripple/json/Output.h>
 #include <ripple/server/ServerHandler.h>
 #include <ripple/server/Session.h>
-#include <ripple/rpc/Output.h>
 #include <ripple/rpc/RPCHandler.h>
 
 namespace ripple {
@@ -50,7 +50,7 @@ public:
     ~ServerHandlerImp();
 
 private:
-    using Output = RPC::Output;
+    using Output = Json::Output;
     using Yield = RPC::Yield;
 
     void

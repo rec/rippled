@@ -32,11 +32,10 @@ class Value;
 
 /** \brief Abstract class for writers.
  */
-class JSON_API Writer
+class JSON_API WriterBase
 {
 public:
-    virtual ~Writer ();
-
+    virtual ~WriterBase () {}
     virtual std::string write ( const Value& root ) = 0;
 };
 
@@ -46,7 +45,7 @@ public:
  * but may be usefull to support feature such as RPC where bandwith is limited.
  * \sa Reader, Value
  */
-class JSON_API FastWriter : public Writer
+class JSON_API FastWriter : public WriterBase
 {
 public:
     FastWriter ();
@@ -82,7 +81,7 @@ private:
  *
  * \sa Reader, Value, Value::setComment()
  */
-class JSON_API StyledWriter: public Writer
+class JSON_API StyledWriter: public WriterBase
 {
 public:
     StyledWriter ();

@@ -25,7 +25,7 @@
 #include <ripple/protocol/JsonFields.h>
 #include <ripple/protocol/STTx.h>
 #include <ripple/rpc/Yield.h>
-#include <ripple/rpc/impl/JsonObject.h>
+#include <ripple/json/Object.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace ripple {
@@ -227,7 +227,7 @@ void fillJson (Object& json, LedgerFill const& fill)
 template <class Object>
 void addJson (Object& json, LedgerFill const& fill)
 {
-    auto&& object = RPC::addObject (json, jss::ledger);
+    auto&& object = Json::addObject (json, jss::ledger);
     fillJson (object, fill);
 }
 
