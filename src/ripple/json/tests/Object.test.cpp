@@ -213,6 +213,7 @@ public:
     void testKeyFailure ()
     {
 #ifdef DEBUG
+        // We only test for key failure when we're compiling with debug.
         setup ("repeating keys");
         auto& root = makeRoot();
         root.set ("foo", "bar");

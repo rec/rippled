@@ -22,8 +22,6 @@
 
 #include <ripple/basics/ToString.h>
 #include <ripple/json/Output.h>
-#include <ripple/protocol/ErrorCodes.h>
-#include <ripple/protocol/ErrorCodes.h>
 #include <memory>
 
 namespace Json {
@@ -200,17 +198,20 @@ public:
     /*** Output a Json::Value. */
     void output (Json::Value const&);
 
+    /** Output a null. */
+    void output (std::nullptr_t);
+
+    /** Output a float. */
+    void output (float);
+
+    /** Output a double. */
+    void output (double);
+
     /** Output numbers or booleans. */
     template <typename Type>
     void output (Type t)
     {
-        implOutput (ripple::to_string (t));
-    }
-
-    /** Output an error code. */
-    void output (ripple::error_code_i t)
-    {
-        output (int(t));
+        implOutput (std::to_string (t));
     }
 
     void output (Json::StaticString const& t)

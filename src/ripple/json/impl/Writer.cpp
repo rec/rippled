@@ -246,21 +246,18 @@ void Writer::output (Json::Value const& value)
     outputJson (value, impl_->getOutput());
 }
 
-template <>
 void Writer::output (float f)
 {
     auto s = ripple::to_string (f);
     impl_->output ({s.data (), lengthWithoutTrailingZeros (s)});
 }
 
-template <>
 void Writer::output (double f)
 {
     auto s = ripple::to_string (f);
     impl_->output ({s.data (), lengthWithoutTrailingZeros (s)});
 }
 
-template <>
 void Writer::output (std::nullptr_t)
 {
     impl_->output ("null");
