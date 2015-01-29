@@ -207,6 +207,9 @@ public:
     /** Output a double. */
     void output (double);
 
+    /** Output a bool. */
+    void output (bool);
+
     /** Output numbers or booleans. */
     template <typename Type>
     void output (Type t)

@@ -120,7 +120,7 @@ Object::Proxy Object::operator[] (std::string const& key)
     return Proxy (*this, key);
 }
 
-Object::Proxy Object::operator[] (Json::StaticString const& key)
+Object::Proxy Object::operator[] (StaticString key)
 {
     return Proxy (*this, std::string (key));
 }
@@ -149,11 +149,6 @@ void copyFrom (Json::Value& to, Json::Value const& from)
 void copyFrom (Object& to, Json::Value const& from)
 {
     doCopyFrom (to, from);
-}
-
-WriterObject stringWriterObject (std::string& s)
-{
-    return WriterObject (stringOutput (s));
 }
 
 } // Json

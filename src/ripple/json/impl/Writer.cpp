@@ -263,6 +263,11 @@ void Writer::output (std::nullptr_t)
     impl_->output ("null");
 }
 
+void Writer::output (bool b)
+{
+    impl_->output (b ? "true" : "false");
+}
+
 void Writer::implOutput (std::string const& s)
 {
     impl_->output (s);

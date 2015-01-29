@@ -201,7 +201,7 @@ public:
     class Proxy;
 
     Proxy operator[] (std::string const& key);
-    Proxy operator[] (Json::StaticString const& key);
+    Proxy operator[] (StaticString);
 
     /** Make a new Object at a key and return it.
 
@@ -274,17 +274,17 @@ public:
 // interoperate.
 
 /** Add a new subarray at a named key in a Json object. */
-Json::Value& setArray (Json::Value&, Json::StaticString const& key);
+Json::Value& setArray (Json::Value&, StaticString key);
 
 /** Add a new subarray at a named key in a Json object. */
-Array setArray (Object&, Json::StaticString const& key);
+Array setArray (Object&, StaticString key);
 
 
 /** Add a new subobject at a named key in a Json object. */
-Json::Value& addObject (Json::Value&, Json::StaticString const& key);
+Json::Value& addObject (Json::Value&, StaticString key);
 
 /** Add a new subobject at a named key in a Json object. */
-Object addObject (Object&, Json::StaticString const& key);
+Object addObject (Object&, StaticString key);
 
 
 /** Append a new subarray to a Json array. */
@@ -309,37 +309,43 @@ void copyFrom (Object& to, Json::Value const& from);
 
 
 /** An Object that contains its own Writer. */
-class WriterObject
+template <class Root>
+class RootWriter
 {
 public:
-    WriterObject (Output const& output)
+    RootWriter (Output const& output)
             : writer_ (std::make_unique<Writer> (output)),
-              object_ (std::make_unique<Object::Root> (*writer_))
+              object_ (std::make_unique<Root> (*writer_))
     {
     }
 
 #ifdef _MSC_VER
-    WriterObject (WriterObject&& other)
+    RootWriter (RootWriter&& other)
             : writer_ (std::move (other.writer_)),
               object_ (std::move (other.object_))
     {
     }
 #endif
 
-    Object* operator->()
+    Root* operator->()
     {
         return object_.get();
     }
 
-    Object& operator*()
+    Root& operator*()
     {
         return *object_;
     }
 
 private:
     std::unique_ptr <Writer> writer_;
-    std::unique_ptr<Object::Root> object_;
+    std::unique_ptr<Root> object_;
 };
+
+template <class Root>
+RootWriter <Root> rootWriter (std::string&);
+
+using WriterObject = RootWriter <Object::Root>;
 
 WriterObject stringWriterObject (std::string&);
 
@@ -349,7 +355,7 @@ WriterObject stringWriterObject (std::string&);
 // Detail class for Object::operator[].
 class Object::Proxy
 {
-private:
+protected:
     Object& object_;
     std::string const key_;
 
@@ -442,25 +448,25 @@ inline void Object::set (std::string const& k, Json::Value const& v)
 }
 
 inline
-Json::Value& setArray (Json::Value& json, Json::StaticString const& key)
+Json::Value& setArray (Json::Value& json, StaticString key)
 {
     return (json[key] = Json::arrayValue);
 }
 
 inline
-Array setArray (Object& json, Json::StaticString const& key)
+Array setArray (Object& json, StaticString key)
 {
     return json.setArray (std::string (key));
 }
 
 inline
-Json::Value& addObject (Json::Value& json, Json::StaticString const& key)
+Json::Value& addObject (Json::Value& json, StaticString key)
 {
     return (json[key] = Json::objectValue);
 }
 
 inline
-Object addObject (Object& object, Json::StaticString const& key)
+Object addObject (Object& object, StaticString key)
 {
     return object.setObject (std::string (key));
 }
@@ -487,6 +493,18 @@ inline
 Object appendObject (Array& json)
 {
     return json.appendObject ();
+}
+
+template <class Root>
+RootWriter <Root> rootWriter (std::string& s)
+{
+    return RootWriter <Root> (stringOutput (s));
+}
+
+inline
+WriterObject stringWriterObject (std::string& s)
+{
+    return rootWriter <Object::Root> (s);
 }
 
 } // Json
