@@ -66,6 +66,11 @@ public:
     {
     }
 
+    Status (error_code_i e, std::string const& s, std::string const& t)
+            : type_ (Type::error_code_i), code_ (e), messages_ ({s, t})
+    {
+    }
+
     /* Returns a representation of the integer status Code as a string.
        If the Status is OK, the result is an empty string.
     */

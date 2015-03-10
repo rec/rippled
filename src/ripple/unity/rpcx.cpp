@@ -27,11 +27,15 @@
 #include <ripple/rpc/RPCHandler.h>
 
 #include <ripple/rpc/impl/Coroutine.cpp>
+#include <ripple/rpc/impl/Field.cpp>
+#include <ripple/rpc/impl/LedgerField.cpp>
 #include <ripple/rpc/impl/Manager.cpp>
+#include <ripple/rpc/impl/NumberField.cpp>
 #include <ripple/rpc/impl/RPCHandler.cpp>
 #include <ripple/rpc/impl/Status.cpp>
-#include <ripple/rpc/impl/Yield.cpp>
 #include <ripple/rpc/impl/Utilities.cpp>
+#include <ripple/rpc/impl/Yield.cpp>
+
 
 #include <ripple/rpc/handlers/Handlers.h>
 #include <ripple/rpc/handlers/AccountCurrencies.cpp>
