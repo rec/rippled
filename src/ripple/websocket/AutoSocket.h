@@ -28,6 +28,9 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
 
+namespace ripple {
+namespace websocket {
+
 // Socket wrapper that supports both SSL and non-SSL connections.
 // Generally, handle it as you would an SSL connection.
 // To force a non-SSL connection, just don't call async_handshake.
@@ -44,6 +47,8 @@ public:
     typedef ssl_socket::handshake_type              handshake_type;
     typedef boost::system::error_code               error_code;
     typedef std::function <void (error_code)>       callback;
+
+    using Ptr = boost::shared_ptr <AutoSocket>;
 
 public:
     AutoSocket (boost::asio::io_service& s, boost::asio::ssl::context& c)
@@ -322,5 +327,8 @@ private:
     bool                mSecure;
     std::vector<char>   mBuffer;
 };
+
+} // websocket
+} // ripple
 
 #endif

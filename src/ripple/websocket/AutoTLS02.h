@@ -32,33 +32,27 @@
 #include <beast/asio/placeholders.h>
 #include <functional>
 
-// Note that AutoSocket.h must be included before this file
-
-namespace websocketpp_02 {
-namespace socket {
+namespace ripple {
+namespace websocket {
 
 template <typename endpoint_type>
-class autotls {
+class AutoTLS02 {
 public:
-    typedef autotls<endpoint_type> type;
-    typedef AutoSocket autotls_socket;
-    typedef boost::shared_ptr<autotls_socket> autotls_socket_ptr;
+    typedef AutoTLS02 <endpoint_type> type;
+    using socket_init_callback = websocketpp_02::socket::socket_init_callback;
 
-    // should be private friended
     boost::asio::io_service& get_io_service() {
         return m_io_service;
     }
 
-    static void handle_shutdown(autotls_socket_ptr, const boost::system::error_code&) {
+    static void handle_shutdown(
+        websocket::AutoSocket::Ptr, boost::system::error_code const&) {
     }
 
-    // should be private friended?
-    autotls_socket::handshake_type get_handshake_type() {
-        if (static_cast< endpoint_type* >(this)->is_server()) {
-            return boost::asio::ssl::stream_base::server;
-        } else {
-            return boost::asio::ssl::stream_base::client;
-        }
+    AutoSocket::handshake_type get_handshake_type() {
+        auto isServer = static_cast <endpoint_type*>(this)->is_server();
+        using boost::asio::ssl::stream_base;
+        return isServer ? stream_base::server : stream_base::client;
     }
 
     class handler_interface {
@@ -76,11 +70,11 @@ public:
     class connection {
     public:
         // should these two be public or protected. If protected, how?
-        autotls_socket::lowest_layer_type& get_raw_socket() {
+        AutoSocket::lowest_layer_type& get_raw_socket() {
             return m_socket_ptr->lowest_layer();
         }
 
-        autotls_socket& get_socket() {
+        AutoSocket& get_socket() {
             return *m_socket_ptr;
         }
 
@@ -94,28 +88,29 @@ public:
         }
 
     protected:
-        connection(autotls<endpoint_type>& e)
+        connection(AutoTLS02 <endpoint_type>& e)
          : m_endpoint(e)
          , m_connection(static_cast< connection_type& >(*this)) {}
 
         void init() {
-            boost::asio::ssl::context& ssl_context (
-                m_connection.get_handler()->get_ssl_context());
+            auto& ssl_context = m_connection.get_handler()->get_ssl_context();
 
-            m_socket_ptr = autotls_socket_ptr (new autotls_socket (
-                m_endpoint.get_io_service(), ssl_context, m_connection.get_handler()->secure_only(),
-                    m_connection.get_handler()->plain_only()));
+            m_socket_ptr = AutoSocket::Ptr (new AutoSocket (
+                m_endpoint.get_io_service(),
+                ssl_context,
+                m_connection.get_handler()->secure_only(),
+                m_connection.get_handler()->plain_only()));
         }
 
-        void async_init(boost::function<void(const boost::system::error_code&)> callback)
+        void async_init(socket_init_callback callback)
         {
             m_connection.get_handler()->on_tcp_init();
 
             // wait for TLS handshake
             // TODO: configurable value
-            m_connection.register_timeout(5000,
-                                          fail::status::TIMEOUT_TLS,
-                                          "Timeout on TLS handshake");
+            m_connection.register_timeout(
+                5000, websocketpp_02::fail::status::TIMEOUT_TLS,
+                "Timeout on TLS handshake");
 
             m_socket_ptr->async_handshake(
                 m_endpoint.get_handshake_type(),
@@ -128,7 +123,8 @@ public:
             );
         }
 
-        void handle_init(socket_init_callback callback,const boost::system::error_code& error) {
+        void handle_init(socket_init_callback callback,
+                         boost::system::error_code const& error) {
             m_connection.cancel_timeout();
             callback(error);
         }
@@ -138,9 +134,10 @@ public:
         bool shutdown() {
             boost::system::error_code ignored_ec;
 
-            m_socket_ptr->async_shutdown( // Don't block on connection shutdown DJS
-                std::bind(
-		            &autotls<endpoint_type>::handle_shutdown,
+            m_socket_ptr->async_shutdown(
+                // Don't block on connection shutdown DJS
+                std::bind (
+		            &AutoTLS02<endpoint_type>::handle_shutdown,
                     m_socket_ptr,
                     beast::asio::placeholders::error
 				)
@@ -154,12 +151,13 @@ public:
         }
     private:
         boost::shared_ptr<boost::asio::ssl::context>    m_context_ptr;
-        autotls_socket_ptr                              m_socket_ptr;
-        autotls<endpoint_type>&                         m_endpoint;
+        AutoSocket::Ptr                              m_socket_ptr;
+        AutoTLS02 <endpoint_type>&                         m_endpoint;
         connection_type&                                m_connection;
     };
+
 protected:
-    autotls (boost::asio::io_service& m) : m_io_service(m)
+    AutoTLS02 (boost::asio::io_service& m) : m_io_service(m)
     {
     }
 
@@ -167,7 +165,7 @@ private:
     boost::asio::io_service&    m_io_service;
 };
 
-} // namespace socket
-} // namespace websocketpp_02
+} // websocket
+} // ripple
 
 #endif // WEBSOCKETPP_SOCKET_AUTOTLS_HPP

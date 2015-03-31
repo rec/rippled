@@ -41,10 +41,6 @@ namespace websocketpp_02 {
         typedef websocketpp_02::endpoint<websocketpp_02::role::server,
                                       websocketpp_02::socket::tls> server_tls;
     #endif
-    #ifdef WEBSOCKETPP_SOCKET_AUTOTLS_HPP
-        typedef websocketpp_02::endpoint<websocketpp_02::role::server,
-                                      websocketpp_02::socket::autotls> server_autotls;
-    #endif
 #endif
 
 

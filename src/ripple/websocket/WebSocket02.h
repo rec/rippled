@@ -21,13 +21,12 @@
 #define RIPPLED_RIPPLE_WEBSOCKET_WEBSOCKET02_H
 
 #include <ripple/websocket/WebSocket.h>
+#include <ripple/websocket/AutoTLS02.h>
 
 // LexicalCast must be included before websocketpp_02.
 #include <beast/module/core/text/LexicalCast.h>
 
 #include <websocketpp_02/src/sockets/socket_base.hpp>
-#include <websocketpp_02/src/websocketpp.hpp>
-#include <websocketpp_02/src/sockets/autotls.hpp>
 #include <websocketpp_02/src/messages/data.hpp>
 
 namespace ripple {
@@ -35,7 +34,8 @@ namespace websocket {
 
 struct WebSocket02
 {
-    using Endpoint = websocketpp_02::server_autotls;
+    using Endpoint = websocketpp_02::endpoint<
+        websocketpp_02::role::server, AutoTLS02>;
     using Connection = Endpoint::connection_type;
     using ConnectionPtr = boost::shared_ptr<Connection>;
     using ConnectionWeakPtr = boost::weak_ptr<Connection>;
@@ -70,7 +70,7 @@ struct WebSocket02
     HandlerPtr makeHandler (ServerDescription const&);
 
     /** Make a connection endpoint from a handler. */
-    static 
+    static
     EndpointPtr makeEndpoint (HandlerPtr&&);
 
     /** Get the ASIO strand that this connection lives on. */

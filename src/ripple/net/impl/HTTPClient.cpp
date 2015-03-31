@@ -309,7 +309,7 @@ public:
         else if (mSSL)
         {
             mSocket.async_handshake (
-                AutoSocket::ssl_socket::client,
+                websocket::AutoSocket::ssl_socket::client,
                 std::bind (
                     &HTTPClientImp::handleRequest,
                     shared_from_this (),
@@ -500,7 +500,7 @@ private:
     typedef std::shared_ptr<HTTPClient> pointer;
 
     bool                                                        mSSL;
-    AutoSocket                                                  mSocket;
+    websocket::AutoSocket                                       mSocket;
     boost::asio::ip::tcp::resolver                              mResolver;
     std::shared_ptr<boost::asio::ip::tcp::resolver::query>    mQuery;
     boost::asio::streambuf                                      mRequest;
