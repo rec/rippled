@@ -31,6 +31,8 @@
 namespace ripple {
 namespace websocket {
 
+enum class SocketSecurity { autodetect, plain, secure };
+
 // Socket wrapper that supports both SSL and non-SSL connections.
 // Generally, handle it as you would an SSL connection.
 // To force a non-SSL connection, just don't call async_handshake.
@@ -39,61 +41,43 @@ namespace websocket {
 class AutoSocket
 {
 public:
-    typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket>   ssl_socket;
-    typedef boost::asio::ip::tcp::socket::endpoint_type endpoint_type;
-    typedef std::shared_ptr<ssl_socket>           socket_ptr;
-    typedef ssl_socket::next_layer_type             plain_socket;
-    typedef ssl_socket::lowest_layer_type           lowest_layer_type;
-    typedef ssl_socket::handshake_type              handshake_type;
-    typedef boost::system::error_code               error_code;
-    typedef std::function <void (error_code)>       callback;
+    using ssl_socket = boost::asio::ssl::stream <boost::asio::ip::tcp::socket>;
+
+    using socket_ptr = std::shared_ptr <ssl_socket>;
+    using plain_socket = ssl_socket::next_layer_type;
+    using lowest_layer_type = ssl_socket::lowest_layer_type;
+    using handshake_type = ssl_socket::handshake_type;
+
+    using error_code = boost::system::error_code;
+    using callback = std::function <void (error_code)>;
 
     using Ptr = boost::shared_ptr <AutoSocket>;
 
-public:
-    AutoSocket (boost::asio::io_service& s, boost::asio::ssl::context& c)
-        : mSecure (false)
-        , mBuffer (4)
-    {
-        mSocket = std::make_shared<ssl_socket> (s, c);
-    }
-
     AutoSocket (boost::asio::io_service& s, boost::asio::ssl::context& c,
-                bool secureOnly, bool plainOnly)
-        : mSecure (secureOnly)
-        , mBuffer ((plainOnly || secureOnly) ? 0 : 4)
+                SocketSecurity security = SocketSecurity::autodetect)
+        : security_ (security)
     {
-        mSocket = std::make_shared<ssl_socket> (s, c);
+        socket_ = std::make_shared<ssl_socket> (s, c);
     }
 
     boost::asio::io_service& get_io_service () noexcept
     {
-        return mSocket->get_io_service ();
+        return socket_->get_io_service ();
     }
 
     bool isSecure ()
     {
-        return mSecure;
+        return security_ == SocketSecurity::secure;
     }
 
     ssl_socket& SSLSocket ()
     {
-        return *mSocket;
+        return *socket_;
     }
 
     plain_socket& PlainSocket ()
     {
-        return mSocket->next_layer ();
-    }
-
-    void setSSLOnly ()
-    {
-        mSecure = true;
-    }
-
-    void setPlainOnly ()
-    {
-        mBuffer.clear ();
+        return socket_->next_layer ();
     }
 
     beast::IP::Endpoint
@@ -112,14 +96,14 @@ public:
 
     lowest_layer_type& lowest_layer ()
     {
-        return mSocket->lowest_layer ();
+        return socket_->lowest_layer ();
     }
 
     void swap (AutoSocket& s) noexcept
     {
-        mBuffer.swap (s.mBuffer);
-        mSocket.swap (s.mSocket);
-        std::swap (mSecure, s.mSecure);
+        buffer_.swap (s.buffer_);
+        socket_.swap (s.socket_);
+        std::swap (security_, s.security_);
     }
 
     boost::system::error_code cancel (boost::system::error_code& ec)
@@ -133,8 +117,6 @@ public:
         bool preverified,
         boost::asio::ssl::verify_context& ctx)
     {
-        using namespace ripple;
-
         if (boost::asio::ssl::rfc2818_verification (domain) (preverified, ctx))
             return true;
 
@@ -148,10 +130,10 @@ public:
     {
         boost::system::error_code ec;
 
-        mSocket->set_verify_mode (boost::asio::ssl::verify_peer);
+        socket_->set_verify_mode (boost::asio::ssl::verify_peer);
 
         // XXX Verify semantics of RFC 2818 are what we want.
-        mSocket->set_verify_callback (
+        socket_->set_verify_callback (
             std::bind (&rfc2818_verify,
                        strDomain,
                        std::placeholders::_1,
@@ -173,30 +155,31 @@ public:
 */
     void async_handshake (handshake_type type, callback cbFunc)
     {
-        if ((type == ssl_socket::client) || (mSecure))
-        {
-            // must be ssl
-            mSecure = true;
-            mSocket->async_handshake (type, cbFunc);
-        }
-        else if (mBuffer.empty ())
-        {
-            // must be plain
-            mSecure = false;
-            mSocket->get_io_service ().post (
+        if (type == ssl_socket::client)
+            security_ = SocketSecurity::secure;
+
+        switch (security_) {
+
+        case SocketSecurity::secure:
+            socket_->async_handshake (type, cbFunc);
+            return;
+
+        case SocketSecurity::plain:
+            socket_->get_io_service ().post (
                 beast::asio::bind_handler (cbFunc, error_code()));
-        }
-        else
-        {
-            // autodetect
-            mSocket->next_layer ().async_receive (
-                boost::asio::buffer (mBuffer),
+            return;
+
+        case SocketSecurity::autodetect:
+            buffer_.resize (handshakeSize);
+            socket_->next_layer ().async_receive (
+                boost::asio::buffer (buffer_),
                 boost::asio::socket_base::message_peek,
                 std::bind (&AutoSocket::handle_autodetect,
                            this,
                            cbFunc,
                            beast::asio::placeholders::error,
                            beast::asio::placeholders::bytes_transferred));
+            return;
         }
     }
 
@@ -204,28 +187,29 @@ public:
     void async_shutdown (ShutdownHandler handler)
     {
         if (isSecure ())
-            mSocket->async_shutdown (handler);
-        else
         {
-            error_code ec;
-            try
-            {
-                lowest_layer ().shutdown (plain_socket::shutdown_both);
-            }
-            catch (boost::system::system_error& e)
-            {
-                ec = e.code();
-            }
-            mSocket->get_io_service ().post (
-                beast::asio::bind_handler (handler, ec));
+            socket_->async_shutdown (handler);
+            return;
         }
+
+        error_code ec;
+        try
+        {
+            lowest_layer ().shutdown (plain_socket::shutdown_both);
+        }
+        catch (boost::system::system_error& e)
+        {
+            ec = e.code();
+        }
+        socket_->get_io_service ().post (
+            beast::asio::bind_handler (handler, ec));
     }
 
     template <typename Seq, typename Handler>
     void async_read_some (const Seq& buffers, Handler handler)
     {
         if (isSecure ())
-            mSocket->async_read_some (buffers, handler);
+            socket_->async_read_some (buffers, handler);
         else
             PlainSocket ().async_read_some (buffers, handler);
     }
@@ -236,7 +220,7 @@ public:
     {
         if (isSecure ())
             boost::asio::async_read_until (
-                *mSocket, buffers, condition, handler);
+                *socket_, buffers, condition, handler);
         else
             boost::asio::async_read_until (
                 PlainSocket (), buffers, condition, handler);
@@ -249,7 +233,7 @@ public:
         Handler handler)
     {
         if (isSecure ())
-            boost::asio::async_read_until (*mSocket, buffers, delim, handler);
+            boost::asio::async_read_until (*socket_, buffers, delim, handler);
         else
             boost::asio::async_read_until (
                 PlainSocket (), buffers, delim, handler);
@@ -262,7 +246,7 @@ public:
         Handler handler)
     {
         if (isSecure ())
-            boost::asio::async_read_until (*mSocket, buffers, cond, handler);
+            boost::asio::async_read_until (*socket_, buffers, cond, handler);
         else
             boost::asio::async_read_until (
                 PlainSocket (), buffers, cond, handler);
@@ -272,7 +256,7 @@ public:
     void async_write (const Buf& buffers, Handler handler)
     {
         if (isSecure ())
-            boost::asio::async_write (*mSocket, buffers, handler);
+            boost::asio::async_write (*socket_, buffers, handler);
         else
             boost::asio::async_write (PlainSocket (), buffers, handler);
     }
@@ -282,7 +266,7 @@ public:
         boost::asio::basic_streambuf<Allocator>& buffers, Handler handler)
     {
         if (isSecure ())
-            boost::asio::async_write (*mSocket, buffers, handler);
+            boost::asio::async_write (*socket_, buffers, handler);
         else
             boost::asio::async_write (PlainSocket (), buffers, handler);
     }
@@ -291,7 +275,7 @@ public:
     void async_read (const Buf& buffers, Condition cond, Handler handler)
     {
         if (isSecure ())
-            boost::asio::async_read (*mSocket, buffers, cond, handler);
+            boost::asio::async_read (*socket_, buffers, cond, handler);
         else
             boost::asio::async_read (PlainSocket (), buffers, cond, handler);
     }
@@ -302,7 +286,7 @@ public:
         Condition cond, Handler handler)
     {
         if (isSecure ())
-            boost::asio::async_read (*mSocket, buffers, cond, handler);
+            boost::asio::async_read (*socket_, buffers, cond, handler);
         else
             boost::asio::async_read (PlainSocket (), buffers, cond, handler);
     }
@@ -311,7 +295,7 @@ public:
     void async_read (const Buf& buffers, Handler handler)
     {
         if (isSecure ())
-            boost::asio::async_read (*mSocket, buffers, handler);
+            boost::asio::async_read (*socket_, buffers, handler);
         else
             boost::asio::async_read (PlainSocket (), buffers, handler);
     }
@@ -320,49 +304,49 @@ public:
     void async_write_some (const Seq& buffers, Handler handler)
     {
         if (isSecure ())
-            mSocket->async_write_some (buffers, handler);
+            socket_->async_write_some (buffers, handler);
         else
             PlainSocket ().async_write_some (buffers, handler);
     }
 
-protected:
+private:
+    static int const handshakeSize = 4;
+
+    bool isSSL (size_t bytesTransferred)
+    {
+        for (auto i = 0; i < bytesTransferred; ++i)
+            if (buffer_[i] >= 127 || buffer_[i] <= 31)
+                return true;
+        return false;
+    }
+
     void handle_autodetect (
         callback cbFunc, const error_code& ec, size_t bytesTransferred)
     {
-        using namespace ripple;
-
         if (ec)
         {
             WriteLog (lsWARNING, AutoSocket) <<
                 "Handle autodetect error: " << ec;
             cbFunc (ec);
         }
-        else if ((mBuffer[0] < 127) && (mBuffer[0] > 31) &&
-                 ((bytesTransferred < 2) || ((mBuffer[1] < 127) &&
-                                             (mBuffer[1] > 31))) &&
-                 ((bytesTransferred < 3) || ((mBuffer[2] < 127) &&
-                                             (mBuffer[2] > 31))) &&
-                 ((bytesTransferred < 4) || ((mBuffer[3] < 127) &&
-                                             (mBuffer[3] > 31))))
+        else if (isSSL (bytesTransferred))
         {
-            // not ssl
-            WriteLog (lsTRACE, AutoSocket) << "non-SSL";
-            mSecure = false;
-            cbFunc (ec);
+            WriteLog (lsTRACE, AutoSocket) << "SSL";
+            security_ = SocketSecurity::secure;
+            socket_->async_handshake (ssl_socket::server, cbFunc);
         }
         else
         {
-            // ssl
-            WriteLog (lsTRACE, AutoSocket) << "SSL";
-            mSecure = true;
-            mSocket->async_handshake (ssl_socket::server, cbFunc);
+            WriteLog (lsTRACE, AutoSocket) << "non-SSL";
+            security_ = SocketSecurity::plain;
+            cbFunc (ec);
         }
     }
 
 private:
-    socket_ptr mSocket;
-    bool mSecure;
-    std::vector<char> mBuffer;
+    socket_ptr socket_;
+    SocketSecurity security_;
+    std::vector<char> buffer_;
 };
 
 } // websocket

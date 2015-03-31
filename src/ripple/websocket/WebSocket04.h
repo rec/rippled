@@ -29,7 +29,7 @@ namespace websocket {
 struct WebSocket04
 {
     using EndpointBase = websocketpp::server <Config04>;
-    
+
     using Connection = EndpointBase::connection_type;
     using ConnectionPtr = std::shared_ptr<Connection>;
     using ConnectionWeakPtr = std::weak_ptr<Connection>;
@@ -68,6 +68,7 @@ struct WebSocket04
     };
 
     using EndpointPtr = std::shared_ptr<Endpoint>;
+
     /** The name of this WebSocket version. */
     static
     char const* versionName();
@@ -92,7 +93,7 @@ struct WebSocket04
     HandlerPtr makeHandler (ServerDescription const&);
 
     /** Make a connection endpoint from a handler. */
-    static 
+    static
     EndpointPtr makeEndpoint (HandlerPtr&&);
 
     /** Get the ASIO strand that this connection lives on. */

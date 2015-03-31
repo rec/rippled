@@ -61,8 +61,7 @@ public:
 
         virtual void on_tcp_init() {};
         virtual boost::asio::ssl::context& get_ssl_context () = 0;
-        virtual bool plain_only() = 0;
-        virtual bool secure_only() = 0;
+        virtual SocketSecurity security() const = 0;
     };
 
     // Connection specific details
@@ -95,11 +94,10 @@ public:
         void init() {
             auto& ssl_context = m_connection.get_handler()->get_ssl_context();
 
-            m_socket_ptr = AutoSocket::Ptr (new AutoSocket (
+            m_socket_ptr = boost::make_shared <AutoSocket> (
                 m_endpoint.get_io_service(),
                 ssl_context,
-                m_connection.get_handler()->secure_only(),
-                m_connection.get_handler()->plain_only()));
+                m_connection.get_handler()->security());
         }
 
         void async_init(socket_init_callback callback)

@@ -442,14 +442,17 @@ public:
         return *port().context;
     }
 
-    bool plain_only()
+    SocketSecurity security() const
     {
-        return port().protocol.count("wss") == 0;
-    }
+        bool acceptsSecure = port().protocol.count("wss");
+        bool acceptsPlain = port().protocol.count("ws");
 
-    bool secure_only()
-    {
-        return port().protocol.count("ws") == 0;
+        assert (acceptsPlain || acceptsSecure);
+        if (acceptsSecure && acceptsPlain)
+            return SocketSecurity::autodetect;
+        if (acceptsSecure)
+            return SocketSecurity::secure;
+        return SocketSecurity::plain;
     }
 
     // Respond to http requests.
