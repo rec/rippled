@@ -61,7 +61,7 @@ HandlerPtr02 WebSocket02::makeHandler (ServerDescription const& desc)
 
 EndpointPtr02 WebSocket02::makeEndpoint (HandlerPtr&& handler)
 {
-    return boost::make_shared <Endpoint > (std::move (handler));
+    return boost::make_shared <Endpoint> (std::move (handler));
 }
 
 boost::asio::io_service::strand& WebSocket02::getStrand (Connection& con)

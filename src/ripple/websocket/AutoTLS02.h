@@ -38,18 +38,21 @@ namespace websocket {
 template <typename endpoint_type>
 class AutoTLS02 {
 public:
-    typedef AutoTLS02 <endpoint_type> type;
+    using type = AutoTLS02 <endpoint_type>;
     using socket_init_callback = websocketpp_02::socket::socket_init_callback;
 
-    boost::asio::io_service& get_io_service() {
+    boost::asio::io_service& get_io_service()
+    {
         return m_io_service;
     }
 
     static void handle_shutdown(
-        websocket::AutoSocket::Ptr, boost::system::error_code const&) {
+        websocket::AutoSocket::Ptr, boost::system::error_code const&)
+    {
     }
 
-    AutoSocket::handshake_type get_handshake_type() {
+    AutoSocket::handshake_type get_handshake_type()
+    {
         auto isServer = static_cast <endpoint_type*>(this)->is_server();
         using boost::asio::ssl::stream_base;
         return isServer ? stream_base::server : stream_base::client;
@@ -69,29 +72,36 @@ public:
     class connection {
     public:
         // should these two be public or protected. If protected, how?
-        AutoSocket::lowest_layer_type& get_raw_socket() {
+        AutoSocket::lowest_layer_type& get_raw_socket()
+        {
             return m_socket_ptr->lowest_layer();
         }
 
-        AutoSocket& get_socket() {
+        AutoSocket& get_socket()
+        {
             return *m_socket_ptr;
         }
 
-        bool is_secure() {
+        bool is_secure()
+        {
             return m_socket_ptr->isSecure();
         }
 
         typename AutoSocket::lowest_layer_type&
-        get_native_socket() {
+        get_native_socket()
+        {
             return m_socket_ptr->lowest_layer();
         }
 
     protected:
         connection(AutoTLS02 <endpoint_type>& e)
-         : m_endpoint(e)
-         , m_connection(static_cast< connection_type& >(*this)) {}
+                : m_endpoint(e)
+                , m_connection(static_cast< connection_type& >(*this))
+        {
+        }
 
-        void init() {
+        void init()
+        {
             auto& ssl_context = m_connection.get_handler()->get_ssl_context();
 
             m_socket_ptr = boost::make_shared <AutoSocket> (
@@ -122,16 +132,16 @@ public:
         }
 
         void handle_init(socket_init_callback callback,
-                         boost::system::error_code const& error) {
+                         boost::system::error_code const& error)
+        {
             m_connection.cancel_timeout();
             callback(error);
         }
 
         // note, this function for some reason shouldn't/doesn't need to be
         // called for plain HTTP connections. not sure why.
-        bool shutdown() {
-            boost::system::error_code ignored_ec;
-
+        bool shutdown()
+        {
             m_socket_ptr->async_shutdown(
                 // Don't block on connection shutdown DJS
                 std::bind (
@@ -141,17 +151,14 @@ public:
 				)
 			);
 
-            if (ignored_ec) {
-                return false;
-            } else {
-                return true;
-            }
+            return true;
         }
+
     private:
-        boost::shared_ptr<boost::asio::ssl::context>    m_context_ptr;
-        AutoSocket::Ptr                              m_socket_ptr;
-        AutoTLS02 <endpoint_type>&                         m_endpoint;
-        connection_type&                                m_connection;
+        boost::shared_ptr<boost::asio::ssl::context> m_context_ptr;
+        AutoSocket::Ptr m_socket_ptr;
+        AutoTLS02 <endpoint_type>& m_endpoint;
+        connection_type& m_connection;
     };
 
 protected:

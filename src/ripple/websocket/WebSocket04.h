@@ -31,8 +31,8 @@ struct WebSocket04
     using EndpointBase = websocketpp::server <Config04>;
 
     using Connection = EndpointBase::connection_type;
-    using ConnectionPtr = std::shared_ptr<Connection>;
-    using ConnectionWeakPtr = std::weak_ptr<Connection>;
+    using ConnectionPtr = std::shared_ptr <Connection>;
+    using ConnectionWeakPtr = std::weak_ptr <Connection>;
     using ErrorCode = std::error_code;
     using Message = Connection::message_type;
     using MessagePtr = Message::ptr;
@@ -50,13 +50,11 @@ struct WebSocket04
         virtual void on_send_empty (ConnectionPtr) = 0;
     };
 
-    using HandlerPtr = std::shared_ptr<Handler>;
+    using HandlerPtr = std::shared_ptr <Handler>;
 
     class Endpoint : public EndpointBase
     {
     public:
-        using ptr = std::shared_ptr<Endpoint>;
-
         Endpoint (HandlerPtr handler) : handler_ (handler)
         {
         }
@@ -67,7 +65,7 @@ struct WebSocket04
         HandlerPtr handler_;
     };
 
-    using EndpointPtr = std::shared_ptr<Endpoint>;
+    using EndpointPtr = std::shared_ptr <Endpoint>;
 
     /** The name of this WebSocket version. */
     static
