@@ -71,8 +71,7 @@ public:
         InfoSub::Source& source,
         handler_type& handler,
         connection_ptr const& cpConnection,
-        beast::IP::Endpoint const& remoteAddress,
-        boost::asio::io_service& io_service);
+        beast::IP::Endpoint const& remoteAddress);
 
     void preDestroy ();
 
@@ -125,8 +124,7 @@ ConnectionImpl <WebSocket>::ConnectionImpl (
     InfoSub::Source& source,
     handler_type& handler,
     connection_ptr const& cpConnection,
-    beast::IP::Endpoint const& remoteAddress,
-    boost::asio::io_service& io_service)
+    beast::IP::Endpoint const& remoteAddress)
         : InfoSub (source, // usage
                    resourceManager.newInboundEndpoint (remoteAddress))
         , m_port (handler.port ())
@@ -134,8 +132,8 @@ ConnectionImpl <WebSocket>::ConnectionImpl (
         , m_isPublic (handler.getPublic ())
         , m_remoteAddress (remoteAddress)
         , m_netOPs (getApp ().getOPs ())
-        , m_io_service (io_service)
-        , m_pingTimer (io_service)
+        , m_io_service (WebSocket::getStrand (*cpConnection).get_io_service ())
+        , m_pingTimer (m_io_service)
         , m_handler (handler)
         , m_connection (cpConnection)
 {
@@ -328,9 +326,7 @@ void ConnectionImpl <WebSocket>::send (Json::Value const& jvObj, bool broadcast)
 {
     WriteLog (lsWARNING, ConnectionImpl)
             << "WebSocket: sending '" << to_string (jvObj);
-    connection_ptr ptr = m_connection.lock ();
-
-    if (ptr)
+    if (connection_ptr ptr = m_connection.lock ())
         m_handler.send (ptr, jvObj, broadcast);
 }
 
@@ -339,9 +335,7 @@ void ConnectionImpl <WebSocket>::disconnect ()
 {
     WriteLog (lsWARNING, ConnectionImpl)
             << "WebSocket: disconnecting";
-    connection_ptr ptr = m_connection.lock ();
-
-    if (ptr)
+    if (connection_ptr ptr = m_connection.lock ())
         this->m_io_service.dispatch (WebSocket::getStrand (*ptr).wrap (std::bind (
             &ConnectionImpl <WebSocket>::handle_disconnect,
                 m_connection)));
@@ -351,9 +345,7 @@ void ConnectionImpl <WebSocket>::disconnect ()
 template <class WebSocket>
 void ConnectionImpl <WebSocket>::handle_disconnect(weak_connection_ptr c)
 {
-    connection_ptr ptr = c.lock ();
-
-    if (ptr)
+    if (connection_ptr ptr = c.lock ())
         WebSocket::handleDisconnect (*ptr);
 }
 

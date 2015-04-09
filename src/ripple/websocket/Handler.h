@@ -206,8 +206,7 @@ public:
                 desc_.source,
                 *this,
                 cpClient,
-                makeBeastEndpoint (remoteEndpoint),
-                WebSocket::getStrand (*cpClient).get_io_service ());
+                makeBeastEndpoint (remoteEndpoint));
             auto result = mMap.emplace (cpClient, std::move (connection));
 
             assert (result.second);
