@@ -32,6 +32,8 @@ using ScopedLockType = std::lock_guard <std::mutex>;
 std::unique_ptr<beast::Stoppable> makeServer02 (ServerDescription const&);
 std::unique_ptr<beast::Stoppable> makeServer04 (ServerDescription const&);
 
+enum class SocketSecurity { plain, secure, autodetect };
+
 } // websocket
 } // ripple
 

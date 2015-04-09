@@ -21,6 +21,7 @@
 #define RIPPLE_WEBSOCKET_AUTOSOCKET_AUTOSOCKET_H_INCLUDED
 
 #include <ripple/basics/Log.h>
+#include <ripple/websocket/WebSocket.h>
 #include <beast/asio/IPAddressConversion.h>
 #include <beast/asio/bind_handler.h>
 #include <beast/asio/placeholders.h>
@@ -30,8 +31,6 @@
 
 namespace ripple {
 namespace websocket {
-
-enum class SocketSecurity { autodetect, plain, secure };
 
 // Socket wrapper that supports both SSL and non-SSL connections.
 // Generally, handle it as you would an SSL connection.
@@ -111,7 +110,6 @@ public:
         return lowest_layer ().cancel (ec);
     }
 
-
     static bool rfc2818_verify (
         std::string const& domain,
         bool preverified,
@@ -143,16 +141,16 @@ public:
         return ec;
     }
 
-/*
-    template <typename HandshakeHandler>
-    BOOST_ASIO_INITFN_RESULT_TYPE(
-        HandshakeHandler, void (boost::system::error_code))
-    async_handshake (
-        handshake_type role, BOOST_ASIO_MOVE_ARG(HandshakeHandler) handler)
-    {
-        return async_handshake_cb (role, handler);
-    }
-*/
+    /*
+        template <typename HandshakeHandler>
+        BOOST_ASIO_INITFN_RESULT_TYPE(
+            HandshakeHandler, void (boost::system::error_code))
+        async_handshake (
+            handshake_type role, BOOST_ASIO_MOVE_ARG(HandshakeHandler) handler)
+        {
+            return async_handshake_cb (role, handler);
+        }
+    */
     void async_handshake (handshake_type type, callback cbFunc)
     {
         if (type == ssl_socket::client)

@@ -87,16 +87,15 @@ public:
             return m_socket_ptr->isSecure();
         }
 
-        typename AutoSocket::lowest_layer_type&
-        get_native_socket()
+        AutoSocket::lowest_layer_type& get_native_socket()
         {
             return m_socket_ptr->lowest_layer();
         }
 
     protected:
-        connection(AutoTLS02 <endpoint_type>& e)
+        connection (AutoTLS02 <endpoint_type>& e)
                 : m_endpoint(e)
-                , m_connection(static_cast< connection_type& >(*this))
+                , m_connection(static_cast <connection_type&>(*this))
         {
         }
 
@@ -110,7 +109,7 @@ public:
                 m_connection.get_handler()->security());
         }
 
-        void async_init(socket_init_callback callback)
+        void async_init (socket_init_callback callback)
         {
             m_connection.get_handler()->on_tcp_init();
 
@@ -131,8 +130,8 @@ public:
             );
         }
 
-        void handle_init(socket_init_callback callback,
-                         boost::system::error_code const& error)
+        void handle_init (socket_init_callback callback,
+                          boost::system::error_code const& error)
         {
             m_connection.cancel_timeout();
             callback(error);
