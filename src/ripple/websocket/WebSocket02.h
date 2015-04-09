@@ -65,13 +65,9 @@ struct WebSocket02
     static
     bool isTextMessage (Message const&);
 
-    /** Create a new Handler. */
+    /** Make a connection endpoint. */
     static
-    HandlerPtr makeHandler (ServerDescription const&);
-
-    /** Make a connection endpoint from a handler. */
-    static
-    EndpointPtr makeEndpoint (HandlerPtr&&);
+    EndpointPtr makeEndpoint (ServerDescription const&);
 
     /** Get the ASIO strand that this connection lives on. */
     static

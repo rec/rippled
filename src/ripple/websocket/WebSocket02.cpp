@@ -51,16 +51,10 @@ bool WebSocket02::isTextMessage (Message const& message)
     return message.get_opcode () == websocketpp_02::frame::opcode::TEXT;
 }
 
-using HandlerPtr02 = WebSocket02::HandlerPtr;
-using EndpointPtr02 = WebSocket02::EndpointPtr;
-
-HandlerPtr02 WebSocket02::makeHandler (ServerDescription const& desc)
+WebSocket02::EndpointPtr WebSocket02::makeEndpoint (
+    ServerDescription const& desc)
 {
-    return boost::make_shared <HandlerImpl <WebSocket02>> (desc);
-}
-
-EndpointPtr02 WebSocket02::makeEndpoint (HandlerPtr&& handler)
-{
+    auto handler = boost::make_shared <HandlerImpl <WebSocket02>> (desc);
     return boost::make_shared <Endpoint> (std::move (handler));
 }
 

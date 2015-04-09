@@ -62,10 +62,9 @@ private:
         WriteLog (lsWARNING, WebSocket)
             << "Websocket: creating endpoint " << desc_.port;
 
-        auto handler = WebSocket::makeHandler (desc_);
         {
             ScopedLockType lock (m_endpointLock);
-            m_endpoint = WebSocket::makeEndpoint (std::move (handler));
+            m_endpoint = WebSocket::makeEndpoint (desc_);
         }
 
         WriteLog (lsWARNING, WebSocket)

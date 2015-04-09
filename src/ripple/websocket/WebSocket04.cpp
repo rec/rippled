@@ -51,16 +51,11 @@ bool WebSocket04::isTextMessage (Message const& message)
     return message.get_opcode () == websocketpp::frame::opcode::text;
 }
 
-using HandlerPtr04 = WebSocket04::HandlerPtr;
-using EndpointPtr04 = WebSocket04::EndpointPtr;
 
-HandlerPtr04 WebSocket04::makeHandler (ServerDescription const& desc)
+WebSocket04::EndpointPtr WebSocket04::makeEndpoint (
+    ServerDescription const& desc)
 {
-    return std::make_shared <HandlerImpl <WebSocket04>> (desc);
-}
-
-EndpointPtr04  WebSocket04::makeEndpoint (HandlerPtr&& handler)
-{
+    auto handler = std::make_shared <HandlerImpl <WebSocket04>> (desc);
     auto endpoint = std::make_shared <Endpoint> (std::move (handler));
 
     endpoint->set_open_handler (
