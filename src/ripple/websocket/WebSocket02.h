@@ -34,7 +34,7 @@ namespace websocket {
 
 struct WebSocket02
 {
-    using Endpoint = websocketpp_02::endpoint<
+    using Endpoint = websocketpp_02::endpoint <
         websocketpp_02::role::server, AutoTLS02>;
     using Connection = Endpoint::connection_type;
     using ConnectionPtr = boost::shared_ptr<Connection>;

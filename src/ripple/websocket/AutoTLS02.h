@@ -38,7 +38,6 @@ namespace websocket {
 template <typename endpoint_type>
 class AutoTLS02 {
 public:
-    using type = AutoTLS02 <endpoint_type>;
     using socket_init_callback = websocketpp_02::socket::socket_init_callback;
 
     boost::asio::io_service& get_io_service()
@@ -53,7 +52,7 @@ public:
 
     AutoSocket::handshake_type get_handshake_type()
     {
-        auto isServer = static_cast <endpoint_type*>(this)->is_server();
+        auto isServer = static_cast <endpoint_type*> (this)->is_server();
         using boost::asio::ssl::stream_base;
         return isServer ? stream_base::server : stream_base::client;
     }

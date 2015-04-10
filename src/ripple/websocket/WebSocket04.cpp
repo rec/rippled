@@ -51,7 +51,6 @@ bool WebSocket04::isTextMessage (Message const& message)
     return message.get_opcode () == websocketpp::frame::opcode::text;
 }
 
-
 WebSocket04::EndpointPtr WebSocket04::makeEndpoint (
     ServerDescription const& desc)
 {
