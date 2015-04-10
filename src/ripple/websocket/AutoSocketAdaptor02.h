@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef WEBSOCKETPP_SOCKET_AUTOTLS_HPP
-#define WEBSOCKETPP_SOCKET_AUTOTLS_HPP
+#ifndef WEBSOCKETPP_SOCKET_AUTOSOCKETADAPTOR02_HPP
+#define WEBSOCKETPP_SOCKET_AUTOSOCKETADAPTOR02_HPP
 
 #include <ripple/websocket/AutoSocket.h>
 #include <beast/asio/placeholders.h>
@@ -35,8 +35,11 @@
 namespace ripple {
 namespace websocket {
 
-template <typename endpoint_type>
-class AutoTLS02 {
+/**
+   Adapt an AutoSocket to the websocketpp framework.
+ */
+template <class endpoint_type>
+class AutoSocketAdaptor02 {
 public:
     using socket_init_callback = websocketpp_02::socket::socket_init_callback;
 
@@ -92,7 +95,7 @@ public:
         }
 
     protected:
-        connection (AutoTLS02 <endpoint_type>& e)
+        connection (AutoSocketAdaptor02 <endpoint_type>& e)
                 : m_endpoint(e)
                 , m_connection(static_cast <connection_type&>(*this))
         {
@@ -143,7 +146,7 @@ public:
             m_socket_ptr->async_shutdown(
                 // Don't block on connection shutdown DJS
                 std::bind (
-		            &AutoTLS02<endpoint_type>::handle_shutdown,
+		            &AutoSocketAdaptor02<endpoint_type>::handle_shutdown,
                     m_socket_ptr,
                     beast::asio::placeholders::error
 				)
@@ -155,12 +158,12 @@ public:
     private:
         boost::shared_ptr<boost::asio::ssl::context> m_context_ptr;
         AutoSocket::Ptr m_socket_ptr;
-        AutoTLS02 <endpoint_type>& m_endpoint;
+        AutoSocketAdaptor02 <endpoint_type>& m_endpoint;
         connection_type& m_connection;
     };
 
 protected:
-    AutoTLS02 (boost::asio::io_service& m) : m_io_service(m)
+    AutoSocketAdaptor02 (boost::asio::io_service& m) : m_io_service(m)
     {
     }
 
@@ -171,4 +174,4 @@ private:
 } // websocket
 } // ripple
 
-#endif // WEBSOCKETPP_SOCKET_AUTOTLS_HPP
+#endif // WEBSOCKETPP_SOCKET_AUTOSOCKETADAPTOR02_HPP
