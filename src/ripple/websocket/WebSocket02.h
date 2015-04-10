@@ -69,6 +69,10 @@ struct WebSocket02
     static
     EndpointPtr makeEndpoint (ServerDescription const&);
 
+    /** Listen on a connection endpoint. */
+    static
+    void listen (ServerDescription const&, Endpoint&);
+
     /** Get the ASIO strand that this connection lives on. */
     static
     boost::asio::io_service::strand& getStrand (Connection&);

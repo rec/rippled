@@ -69,8 +69,8 @@ private:
 
         WriteLog (lsWARNING, WebSocket)
             << "Websocket: listening on " << desc_.port;
-        listen();
 
+        WebSocket::listen (desc_, *m_endpoint);
         {
             ScopedLockType lock (m_endpointLock);
             m_endpoint.reset();
@@ -99,8 +99,6 @@ private:
             endpoint->stop ();
         signalThreadShouldExit ();
     }
-
-    void listen();
 };
 
 } // websocket

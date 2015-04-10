@@ -127,12 +127,11 @@ boost::asio::io_service::strand& WebSocket04::getStrand (Connection& con)
     return *con.get_strand();
 }
 
-template <>
-void Server <WebSocket04>::listen()
+void WebSocket04::listen (ServerDescription const& desc, Endpoint& endpoint)
 {
-    m_endpoint->listen (desc_.port.ip, desc_.port.port);
-    m_endpoint->start_accept();
-    auto c = m_endpoint->get_io_service ().run ();
+    endpoint.listen (desc.port.ip, desc.port.port);
+    endpoint.start_accept();
+    auto c = endpoint.get_io_service ().run ();
     WriteLog (lsWARNING, WebSocket)
             << "Server run with: '" << c;
 

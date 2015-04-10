@@ -82,12 +82,11 @@ void ConnectionImpl <WebSocket02>::setPingTimer ()
     }
 }
 
-template <>
-void Server <WebSocket02>::listen()
+void WebSocket02::listen (ServerDescription const& desc, Endpoint& endpoint)
 {
     try
     {
-        m_endpoint->listen (desc_.port.ip, desc_.port.port);
+        endpoint.listen (desc.port.ip, desc.port.port);
     }
     catch (std::exception const& e)
     {
@@ -98,7 +97,7 @@ void Server <WebSocket02>::listen()
             // https://github.com/zaphoyd/websocketpp/issues/98
             try
             {
-                m_endpoint->get_io_service ().run ();
+                endpoint.get_io_service ().run ();
                 break;
             }
             catch (std::exception const& e)
