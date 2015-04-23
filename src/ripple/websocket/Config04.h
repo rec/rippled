@@ -21,6 +21,7 @@
 #define RIPPLED_RIPPLE_WEBSOCKET_CONFIG04_H
 
 #include <ripple/websocket/Logger.h>
+// #include <ripple/websocket/AutoSocketAdaptor04.h>
 
 #include <websocketpp/config/core.hpp>
 #include <websocketpp/server.hpp>
