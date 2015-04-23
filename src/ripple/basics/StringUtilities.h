@@ -79,6 +79,33 @@ inline static std::string sqlEscape (Blob const& vecSrc)
     return j;
 }
 
+/**
+   Return the position first character which isn't in the range [0, 127],
+   or std::string::npos if no such character exists.
+ */
+inline
+size_t firstExtendedCharacter (std::string const& s)
+{
+    for (auto i = 0; i < s.size(); ++i)
+    {
+        if (s[i] < 0)
+            return i;
+    }
+
+    return std::string::npos;
+}
+
+inline
+std::string pointTo (size_t size)
+{
+    std::string result;
+    if (size != std::string::npos) {
+        result.reserve (size + 1);
+        result += '^';
+    }
+    return result;
+}
+
 int strUnHex (std::string& strDst, std::string const& strSrc);
 
 uint64_t uintFromHex (std::string const& strSrc);
@@ -92,6 +119,7 @@ bool parseIpPort (std::string const& strSource, std::string& strIP, int& iPort);
 
 bool parseUrl (std::string const& strUrl, std::string& strScheme,
                std::string& strDomain, int& iPort, std::string& strPath);
+
 
 } // ripple
 

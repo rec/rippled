@@ -403,8 +403,8 @@ void Config::loadFromString (std::string const& fileContents)
 
             if (!jrReader.parse (strJson, jvCommand))
                 throw std::runtime_error (
-                    boost::str (boost::format (
-                        "Couldn't parse [" SECTION_RPC_STARTUP "] command: %s") % strJson));
+                    "Couldn't parse [" SECTION_RPC_STARTUP "] command: " +
+                    strJson);
 
             RPC_STARTUP.append (jvCommand);
         }
@@ -415,7 +415,7 @@ void Config::loadFromString (std::string const& fileContents)
         if (getSingleSection (secConfig, "database_path", dbPath))
         {
             boost::filesystem::path p(dbPath);
-            legacy("database_path", 
+            legacy("database_path",
                    boost::filesystem::absolute (p).string ());
         }
     }

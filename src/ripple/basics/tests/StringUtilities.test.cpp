@@ -120,11 +120,31 @@ public:
         expect(result == "hello", result);
     }
 
+    void testFirstExtendedCharacter ()
+    {
+        testcase ("firstExtendedCharacter");
+        expect (firstExtendedCharacter("") == std::string::npos);
+        expect (firstExtendedCharacter("hello") == std::string::npos);
+        expect (firstExtendedCharacter("\x87") == 0);
+        expect (firstExtendedCharacter("hell\x87o") == 4);
+    }
+
+
+    void testPointTo ()
+    {
+        testcase ("pointTo");
+        expect (pointTo (std::string::npos) == "");
+        expect (pointTo (0) == "^");
+        expect (pointTo (1) == " ^");
+        expect (pointTo (2) == "  ^");
+    }
+
     void run ()
     {
         testParseUrl ();
         testUnHex ();
         testToString ();
+        testFirstExtendedCharacter();
     }
 };
 
