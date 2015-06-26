@@ -70,7 +70,6 @@ void addLine (Json::Value& jsonLines, RippleState const& line)
 
 // {
 //   account: <account>|<account_public_key>
-//   account_index: <number>        // optional, defaults to 0.
 //   ledger_hash : <ledger>
 //   ledger_index : <ledger_index>
 //   limit: integer                 // optional
@@ -88,13 +87,9 @@ Json::Value doAccountLines (RPC::Context& context)
         return result;
 
     std::string strIdent (params[jss::account].asString ());
-    bool bIndex (params.isMember (jss::account_index));
-    int iIndex (bIndex ? params[jss::account_index].asUInt () : 0);
-
     AccountID accountID;
 
-    auto jv = RPC::accountFromString (
-        accountID, bIndex, strIdent, iIndex, false);
+    auto jv = RPC::accountFromString (accountID, strIdent);
     if (! jv.empty ())
     {
         for (auto it = jv.begin (); it != jv.end (); ++it)
@@ -114,16 +109,8 @@ Json::Value doAccountLines (RPC::Context& context)
     AccountID raPeerAccount;
     if (hasPeer)
     {
-        bool bPeerIndex (params.isMember (jss::peer_index));
-        int iPeerIndex (bIndex ? params[jss::peer_index].asUInt () : 0);
-
         result[jss::peer] = getApp().accountIDCache().toBase58 (accountID);
-
-        if (bPeerIndex)
-            result[jss::peer_index] = iPeerIndex;
-
-        result = RPC::accountFromString (
-            raPeerAccount, bPeerIndex, strPeer, iPeerIndex, false);
+        result = RPC::accountFromString (raPeerAccount, strPeer);
 
         if (! result.empty ())
             return result;

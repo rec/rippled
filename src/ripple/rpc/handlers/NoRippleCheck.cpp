@@ -41,7 +41,6 @@ static void fillTransaction (
 
 // {
 //   account: <account>|<account_public_key>
-//   account_index: <number>        // optional, defaults to 0.
 //   ledger_hash : <ledger>
 //   ledger_index : <ledger_index>
 //   limit: integer                 // optional, number of problems
@@ -94,15 +93,12 @@ Json::Value doNoRippleCheck (RPC::Context& context)
         transactions ? (result[jss::transactions] = Json::arrayValue) : dummy;
 
     std::string strIdent (params[jss::account].asString ());
-    bool bIndex (params.isMember (jss::account_index));
-    int iIndex (bIndex ? params[jss::account_index].asUInt () : 0);
     AccountID accountID;
 
-    Json::Value const jv = RPC::accountFromString (
-        accountID, bIndex, strIdent, iIndex, false);
+    auto jv = RPC::accountFromString (accountID, strIdent);
     if (! jv.empty ())
     {
-        for (Json::Value::const_iterator it (jv.begin ()); it != jv.end (); ++it)
+        for (auto it (jv.begin ()); it != jv.end (); ++it)
             result[it.memberName ()] = it.key ();
 
         return result;
