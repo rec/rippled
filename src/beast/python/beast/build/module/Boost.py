@@ -12,20 +12,21 @@ from beast.build import Function, Module
 def boost(variant, link_libraries):
     link_libraries = [i if i.startswith('boost_') else 'boost_' + i
                       for i in link_libraries]
-    try:
-        root = variant.state.environ['BOOST_ROOT']
-    except KeyError:
-        raise KeyError('The environment variable BOOST_ROOT must be set')
-    root = os.path.normpath(root)
+    root = variant.state.environ.get('BOOST_ROOT')
+    if root:
+        root = os.path.normpath(root)
+        variant.env['BOOST_ROOT'] = root
 
-    # We prefer static libraries for boost
-    static_libs = ['%s/stage/lib/lib%s.a' % (root, l) for l in link_libraries]
-    if all(os.path.exists(f) for f in static_libs):
-        link_libraries = [variant.state.sconstruct.File(f) for f in static_libs]
-    variant.env.Append(CPPPATH=[root],
-                       LIBPATH=[os.path.join(root, 'stage', 'lib')],
-                       LIBS=link_libraries + ['dl'])
-    variant.env['BOOST_ROOT'] = root
+        # We prefer static libraries for boost
+        static_libs = ['%s/stage/lib/lib%s.a' % (root, l)
+                       for l in link_libraries]
+        if all(os.path.exists(f) for f in static_libs):
+            link_libraries = [variant.state.sconstruct.File(f)
+                              for f in static_libs]
+            variant.env.Append(CPPPATH=[root],
+                               LIBPATH=[os.path.join(root, 'stage', 'lib')])
+
+    variant.env.Append(LIBS=link_libraries + ['dl'])
 
 
 def module(link_libraries=None):

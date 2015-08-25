@@ -68,7 +68,7 @@ class TagGroups(object):
 
 
 class Targets(object):
-    """Map a command line to targets and TagGroupss.
+    """Map a command line to targets and TagGroups.
 
     A target is what is actually being built - examples in rippled are "install"
     and "tests".  The target is read from the command line entry, or if there is
