@@ -9,8 +9,8 @@ from __future__ import (
 import os
 import unittest
 
-from beast.build import BuildState, Function, Module
-from beast.build.Mock import MockBuildState
+from beast.build import State, Env, Function, Module
+from beast.build.Mock import MockState
 
 def applier(f, *args, **kwds):
     """Return a function that applies f to an item.
@@ -34,7 +34,7 @@ class test_Module(unittest.TestCase):
     def test_trivial_module(self):
         module = Module.matching_function()
         tags = []
-        self.assertFalse(module(tags, MockBuildState()))
+        self.assertFalse(module(tags, MockState()))
 
     def test_module(self):
         result = []
@@ -43,15 +43,15 @@ class test_Module(unittest.TestCase):
 
         module = Module.matching_function(
             function,
-            ['debug', function, Function.Env.Append(CXXFLAGS='-g')],
+            ['debug', function, Env.Append(CXXFLAGS='-g')],
             ['ubuntu', applier(function, thing='ubub')],
             ['wombatu', applier(function, thing='FAIL')],
             ['no_debug', applier(function, thing='FAIL')],
             ['no_msvc', applier(function, something='not msvc')],
-            ['debug', 'wombatu', Function.Env.Append(CXXFLAGS='FAIL')],
-            ['debug', 'ubuntu', Function.Env.Append(CPPPATH='/var/foo')],
+            ['debug', 'wombatu', Env.Append(CXXFLAGS='FAIL')],
+            ['debug', 'ubuntu', Env.Append(CPPPATH='/var/foo')],
         )
-        state = MockBuildState(tags=['debug', 'ubuntu', 'unity'])
+        state = MockState(tags=['debug', 'ubuntu', 'unity'])
 
         module(state)
         self.assertEquals(state.env.appends,

@@ -3,7 +3,7 @@
 # This file copyright (c) 2015, Tom Ritchford <tom@swirly.com>
 # under the Boost software license http://www.boost.org/LICENSE_1_0.txt
 
-from beast.build.BuildState import BuildState
+from beast.build.Build import State
 
 class MockSConstructEnvironment(dict):
     def __init__(self, *binaries, **env):
@@ -35,6 +35,6 @@ def MockSConstruct(**sconstruct):
             'GetOption': lambda name: None}
 
 
-def MockBuildState(environ=None, sconstruct=None, tags=None):
+def MockState(environ=None, sconstruct=None, tags=None):
     mock_sconstruct = MockSConstruct(**(sconstruct or {}))
-    return BuildState(mock_sconstruct, environ=environ or {}, tags=tags or [])
+    return State(mock_sconstruct, environ=environ or {}, tags=tags or [])

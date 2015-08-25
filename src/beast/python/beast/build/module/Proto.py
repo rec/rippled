@@ -7,8 +7,7 @@ from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
 import os
-from beast.build.Module import Module
-from beast.build.Function import Env, compose, pkg_config, for_tags
+from beast.build.Build import Env, Module, compose, pkg_config, for_tags
 
 def before(*source_directories):
     def function(state):

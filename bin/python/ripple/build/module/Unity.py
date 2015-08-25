@@ -1,14 +1,9 @@
-# This file is part of Beast: http://github.com/vinniefalco/Beast
-#
-# This file copyright (c) 2015, Tom Ritchford <tom@swirly.com>
-# under the Boost software license http://www.boost.org/LICENSE_1_0.txt
-
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
 import os
 
-from beast.build.Function import compose, for_tags
+from beast.build.Build import compose, for_tags
 
 
 def files(modules=None,
@@ -29,7 +24,7 @@ def files(modules=None,
 
     def _nounity(variant):
         directories = _join(source_root, nounity_directories)
-        variant.add_source_by_directory(*directories, **kwds)
+        variant.add_source_directories(*directories, **kwds)
 
     return compose(for_tags('unity', _unity),
                    for_tags('nounity', _nounity))

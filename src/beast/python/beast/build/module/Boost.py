@@ -7,35 +7,29 @@ from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
 import os
-from beast.build import Function, Module
+from beast.build.Build import Env, Module, for_tags
 
 def boost(variant, link_libraries):
     link_libraries = [i if i.startswith('boost_') else 'boost_' + i
                       for i in link_libraries]
-    try:
-        root = variant.state.environ['BOOST_ROOT']
-    except KeyError:
-        raise KeyError('The environment variable BOOST_ROOT must be set')
-    root = os.path.normpath(root)
-
-    # We prefer static libraries for boost
-    static_libs = ['%s/stage/lib/lib%s.a' % (root, l) for l in link_libraries]
-    if all(os.path.exists(f) for f in static_libs):
-        link_libraries = [variant.state.sconstruct.File(f) for f in static_libs]
-    variant.env.Append(CPPPATH=[root],
-                       LIBPATH=[os.path.join(root, 'stage', 'lib')],
-                       LIBS=link_libraries + ['dl'])
-    variant.env['BOOST_ROOT'] = root
+    root = variant.state.environ.get('BOOST_ROOT')
+    if root:
+        root = os.path.normpath(root)
+        variant.env['BOOST_ROOT'] = root
+        variant.env.Append(CPPPATH=[root],
+                           LIBPATH=[os.path.join(root, 'stage', 'lib')])
+    variant.env.Append(LIBS=link_libraries + ['dl'])
 
 
 def module(link_libraries=None):
     """Load Boost with the given precompiled link_libraries if any."""
-    return Module.Module(
-        files=lambda variant: boost(variant, link_libraries or []),
-        before=Function.for_tags(
+    return Module(
+       setup=for_tags(
             'clang',
-            Function.Env.Append(
+            Env.Append(
                 CPPDEFINES=['BOOST_ASIO_HAS_STD_ARRAY'],
             ),
         ),
+
+        files=lambda variant: boost(variant, link_libraries or []),
     )

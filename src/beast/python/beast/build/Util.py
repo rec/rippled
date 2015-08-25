@@ -47,16 +47,3 @@ def iterate_files(root, function, condition=lambda x: True, walk=os.walk):
 def match_suffix(suffixes, path):
     ext = os.path.splitext(path)
     return ext[1] and ext[1] in suffixes
-
-
-def list_sources(root, suffixes, walk=os.walk):
-    condition = lambda path: match_suffix(suffixes, path)
-    return iterate_files(root, os.path.normpath, condition, walk)
-
-
-class DictToAttr(object):
-    def __init__(self, **kwds):
-        self.__kwds = kwds
-
-    def __getattr__(self, key):
-        return self.__kwds[key]

@@ -68,7 +68,7 @@ class TagGroups(object):
 
 
 class Targets(object):
-    """Map a command line to targets and TagGroupss.
+    """Map a command line to targets and TagGroups.
 
     A target is what is actually being built - examples in rippled are "install"
     and "tests".  The target is read from the command line entry, or if there is
@@ -109,16 +109,3 @@ class Targets(object):
 
     def __repr__(self):
         return 'Target(%s)' % repr(self.targets)
-
-
-class Target(object):
-    def __init__(self, name, tag_groups=None, program_name=None):
-        self.name = name
-        self.tag_groups = TagGroups(*(tag_groups or ()))
-        self.program_name = program_name
-
-CPP_GROUPS = (
-    ('gcc', 'clang', 'msvc'),
-    ('release', 'debug', 'profile'),
-    ('unity', 'nounity'),
-)

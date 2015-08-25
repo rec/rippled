@@ -18,7 +18,7 @@ def _execute(args, include_errors=True, **kwds):
         report a warning if there was more than one line."""
         lines = line.strip().splitlines()
         if report_errors and len(lines) > 1:
-          print('multiline result:', lines)
+            print('multiline result:', lines)
         return joiner.join(lines)
     def is_string(s):
         """Is s a string? - in either Python 2.x or 3.x."""
@@ -29,31 +29,14 @@ def _execute(args, include_errors=True, **kwds):
     return single_line(subprocess.check_output(args, stderr=stderr, **kwds))
 
 
-class GitInfo(object):
-    """Provides information about git and the repository we are called from."""
-    def __init__(self, env, verbose=True):
-        self.tags = self.branch = self.user = ''
-        self.exists = env.Detect('git')
-        if not self.exists:
-            if verbose:
-                print('ERROR: not in a git directory!')
-            return
-        try:
-            self.tags = _execute('git describe --tags')
-            self.branch = _execute('git rev-parse --abbrev-ref HEAD')
-            remote = _execute('git config remote.origin.url')
-            self.user = remote.split(':')[1].split('/')[0]
-        except:
-            if verbose:
-                print('ERROR: No git tag found!')
-            self.exists = False
+def git_tag():
+    try:
+        tags = _execute('git describe --tags')
+        branch = _execute('git rev-parse --abbrev-ref HEAD')
+        remote = _execute('git config remote.origin.url')
+        user = remote.split(':')[1].split('/')[0]
 
-    def to_dict(self):
-        if self.exists:
-            id = '%s+%s.%s' % (self.tags, self.user, self.branch)
-            return {'CPPDEFINES': {'GIT_COMMIT_ID' : '\'"%s"\'' % id}}
+        id = '%s+%s.%s' % (tags, user, branch)
+        return {'CPPDEFINES': {'GIT_COMMIT_ID' : '\'"%s"\'' % id}}
+    except:
         return {}
-
-
-def git_tag(env):
-    return GitInfo(env, verbose=False).to_dict()

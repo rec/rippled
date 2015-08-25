@@ -9,7 +9,7 @@ import os
 import subprocess
 import time
 
-from beast.build import Function, Module
+from beast.build.Build import Env, Module, compose, for_tags, pkg_config
 
 def parse_time(t):
     return time.strptime(t, '%a %b %d %H:%M:%S %Z %Y')
@@ -46,11 +46,12 @@ def env_darwin(variant):
     variant.env.Prepend(CPPPATH='%s/include' % root,
                         LIBPATH='%s/lib' % root)
 
-MODULE = Module.Module(
-    before=Function.Env.Append(CPPDEFINES=['OPENSSL_NO_SSL2']),
-    files=Function.compose(
-        Function.for_tags('linux', check, Function.pkg_config('openssl')),
-        Function.for_tags('windows', env_windows),
-        Function.for_tags('darwin', env_darwin),
+MODULE = Module(
+    setup=Env.Append(CPPDEFINES=['OPENSSL_NO_SSL2']),
+
+    files=compose(
+        for_tags('linux', check, pkg_config('openssl')),
+        for_tags('windows', env_windows),
+        for_tags('darwin', env_darwin),
     ),
 )

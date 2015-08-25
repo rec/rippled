@@ -10,6 +10,8 @@ from collections import OrderedDict
 
 import os
 
+from ..System import SYSTEM
+
 # http://stackoverflow.com/a/377028/43839
 def which(program, environ=os.environ):
     def is_exe(fpath):
@@ -30,7 +32,7 @@ def which(program, environ=os.environ):
 
 
 def where_is(env, filename, environ=os.environ):
-    # Use BuildState's WhereIs if available, otherwise the replacement.
+    # Use State's WhereIs if available, otherwise the replacement.
     return getattr(env, 'WhereIs', which)(filename)
 
 
@@ -151,5 +153,9 @@ TOOLCHAINS = MSVC, GCC, CLANG
 
 
 def detect(env):
-    result = ((t, t.detect(env)) for t in TOOLCHAINS)
+    if SYSTEM.osx:
+        # On OS/X, clang masquerades as gcc. Hard-coding this is easiest.
+        result = [[CLANG, {'CC': 'clang', 'CXX': 'clang++', 'LINK': 'clang++'}]]
+    else:
+        result = [[t, t.detect(env)] for t in TOOLCHAINS]
     return OrderedDict((t.name, v) for t, v in result if v)
