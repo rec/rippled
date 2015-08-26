@@ -9,22 +9,23 @@ from __future__ import (
 import os
 import unittest
 
-from beast.build import Util
+from beast.build import Variant
 
 class test_Util(unittest.TestCase):
     def setUp(self):
         self.printed = []
 
     def test_empty_list_sources(self):
-        s = Util.list_sources('/root', '.cpp', lambda x: [])
+        s = Variant.list_sources('/root', '.cpp', lambda x: [])
         self.assertEquals(list(s), [])
 
     def test_list_sources(self):
         walk = (('/foo', [], ['a.test.cpp']),
                 ('/bar', [], ['b.cpp']),
                 ('/bar', [], ['.c.test.cpp']))
-        s = Util.list_sources('/root', '.cpp', lambda x: walk)
+        s = Variant.list_sources('/root', '.cpp', lambda x: walk)
         self.assertEquals(list(s), ['/foo/a.test.cpp', '/bar/b.cpp'])
+
 
 if __name__ == "__main__":
     unittest.main()

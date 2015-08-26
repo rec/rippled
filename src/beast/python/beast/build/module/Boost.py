@@ -7,7 +7,7 @@ from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
 import os
-from beast.build import Function, Module
+from beast.build.Build import Env, Module, for_tags
 
 def boost(variant, link_libraries):
     link_libraries = [i if i.startswith('boost_') else 'boost_' + i
@@ -31,12 +31,13 @@ def boost(variant, link_libraries):
 
 def module(link_libraries=None):
     """Load Boost with the given precompiled link_libraries if any."""
-    return Module.Module(
-        files=lambda variant: boost(variant, link_libraries or []),
-        before=Function.for_tags(
+    return Module(
+       setup=for_tags(
             'clang',
-            Function.Env.Append(
+            Env.Append(
                 CPPDEFINES=['BOOST_ASIO_HAS_STD_ARRAY'],
             ),
         ),
+
+        files=lambda variant: boost(variant, link_libraries or []),
     )

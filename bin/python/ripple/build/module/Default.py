@@ -3,87 +3,42 @@ from __future__ import (
 
 import os
 
-from beast.build.Module import Module
-
-from beast.build.Function import Env, compose, for_tags, not_tags
-
-Append = Env.Append
-Prepend = Env.Prepend
-
+from beast.build.Build import Env, Module, compose, for_tags, not_tags
 
 MODULE = Module(
     files=compose(
         for_tags(
             'debug',
-            Append(CPPDEFINES=['DEBUG', '_DEBUG']),
+            Env.Append(CPPDEFINES=['DEBUG', '_DEBUG']),
         ),
 
         for_tags(
             'release',
-             Append(
+             Env.Append(
                  CPPDEFINES=['NDEBUG'],
                  CCFLAGS=['-O3','-fno-strict-aliasing'],
              ),
         ),
 
-        not_tags(
-            'msvc',
-            Prepend(
-                CFLAGS=['-Wall'],
-                CXXFLAGS=['-Wall'],
-            ),
-
-            Append(
-                CCFLAGS=[
-                    '-Wno-sign-compare',
-                    '-Wno-char-subscripts',
-                    '-Wno-format',
-                    '-g',
-                ],
-                LINKFLAGS=['-rdynamic', '-g'],
-                CXXFLAGS=['-frtti', '-std=c++11', '-Wno-invalid-offsetof'],
-                CPPDEFINES=['_FILE_OFFSET_BITS=64', {'HAVE_USLEEP' : '1'}],
-            ),
-        ),
-
-        for_tags(
-            'gcc', 'profile',
-            Prepend(
-                CCFLAGS=['-p', '-pg'],
-                LINKFLAGS=['-p', '-pg'],
-            ),
-        ),
-
-        for_tags(
-            'clang', 'profile',
-            Prepend(
-                CCFLAGS=['-p', '-pg'],
-                LINKFLAGS=['-p', '-pg'],
-            ),
-        ),
-
         for_tags(
             'gcc',
-            Append(
+            Env.Append(
                 CCFLAGS=['-Wno-unused-but-set-variable',
                          '-Wno-unused-local-typedefs'],
             ),
-        ),
 
-        # If we are in debug mode, use GCC-specific functionality to add
-        # extra error checking into the code (e.g. std::vector will throw
-        # for out-of-bounds conditions)
-        for_tags(
-            'gcc', 'debug',
-            Append(
-                CPPDEFINES={'_FORTIFY_SOURCE': 2},
-                CCFLAGS=['-O0'],
+            for_tags(
+                'debug',
+                Env.Append(
+                    CPPDEFINES={'_FORTIFY_SOURCE': 2},
+                    CCFLAGS=['-O0'],
+                ),
             ),
         ),
 
         for_tags(
             'clang',
-            Append(
+            Env.Append(
                 CCFLAGS=['-Wno-redeclared-class-member'],
 
                 CXXFLAGS=[
@@ -95,8 +50,10 @@ MODULE = Module(
         ),
 
         for_tags(
-            'darwin',
-            Append(
+            'osx',
+            Env.Replace(CC='clang', CXX='clang++', LINK='clang++'),
+
+            Env.Append(
                 CPPDEFINES=[
                     'DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER',
                 ],
@@ -114,14 +71,44 @@ MODULE = Module(
             ),
         ),
 
-        for_tags('clang', Append(LIBS=['rt'])),
+        not_tags('osx', 'msvc', Env.Append(LIBS=['rt'])),
 
-        for_tags('gcc', Append(LIBS=['rt'])),
+        not_tags(
+            'msvc',
+
+            Env.Prepend(
+                CFLAGS=['-Wall'],
+                CXXFLAGS=['-Wall'],
+            ),
+
+            Env.Append(
+                CCFLAGS=[
+                    '-Wno-sign-compare',
+                    '-Wno-char-subscripts',
+                    '-Wno-format',
+                    '-g',
+                ],
+
+                LINKFLAGS=['-rdynamic', '-g'],
+
+                CXXFLAGS=['-frtti', '-std=c++11', '-Wno-invalid-offsetof'],
+
+                CPPDEFINES=['_FILE_OFFSET_BITS=64', {'HAVE_USLEEP' : '1'}],
+            ),
+
+            for_tags(
+                'profile',
+                Env.Prepend(
+                    CCFLAGS=['-p', '-pg'],
+                    LINKFLAGS=['-p', '-pg'],
+                ),
+            ),
+        ),
 
         for_tags(
             'msvc',
 
-             Append(
+             Env.Append(
                  CCFLAGS=[
                      '/bigobj',           # Increase object file max size
                      '/EHa',              # ExceptionHandling all
@@ -185,30 +172,30 @@ MODULE = Module(
                      '/TLBID:1',
                  ],
              ),
-        ),
 
-        for_tags(
-            'msvc', 'debug',
+            for_tags(
+                'debug',
 
-            Append(
-                CCFLAGS=[
-                    '/GS',              # Buffers security check: enable
-                    '/MTd',             # Language: Multi-threaded Debug CRT
-                    '/Od',              # Optimization: Disabled
-                    '/RTC1',            # Run-time error checks:
-                ],
-                CPPDEFINES=['_CRTDBG_MAP_ALLOC'],
-             ),
-        ),
+                Env.Append(
+                    CCFLAGS=[
+                        '/GS',              # Buffers security check: enable
+                        '/MTd',             # Language: Multi-threaded Debug CRT
+                        '/Od',              # Optimization: Disabled
+                        '/RTC1',            # Run-time error checks:
+                    ],
+                    CPPDEFINES=['_CRTDBG_MAP_ALLOC'],
+                 ),
+            ),
 
-        for_tags(
-            'msvc', 'release',
+            for_tags(
+                'release',
 
-            Append(
-                CCFLAGS=[
-                    '/MT',              # Language: Multi-threaded CRT
-                    '/Ox',
-                ],
+                Env.Append(
+                    CCFLAGS=[
+                        '/MT',              # Language: Multi-threaded CRT
+                        '/Ox',
+                    ],
+                ),
             ),
         ),
     ),

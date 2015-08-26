@@ -10,12 +10,12 @@ import os
 import unittest
 
 from beast.build import Toolchain
-from beast.build.Mock import MockBuildState, MockSConstruct
+from beast.build.Mock import MockState, MockSConstruct
 
 class test_detect_toolchain(unittest.TestCase):
     def detect(self, is_vs=False, **environ):
         tools = Toolchain.detect(
-            MockBuildState(environ=environ, sconstruct={'is_vs': is_vs}))
+            MockState(environ=environ, sconstruct={'is_vs': is_vs}))
         return sorted(tools)
 
     def test_trivial(self):

@@ -3,15 +3,15 @@ from __future__ import (
 
 import os
 
-from beast.build import BuildState, TagSet
-from ripple.build.module import MODULES
+from beast.build.Target import Target
+from .module.Modules import MODULES
 
 CONFIG = {
     'modules': MODULES,
 
     'targets': [
-        TagSet.Target('install', TagSet.CPP_GROUPS, program_name='rippled'),
-        TagSet.Target('vcxproj'),
-        TagSet.Target('count_tests'),
+        Target('install', Target.CPP_GROUPS, program_name='rippled'),
+        Target('vcxproj'),
+        Target('count_tests'),
     ],
 }

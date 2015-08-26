@@ -84,7 +84,7 @@ import os, sys
 sys.path.append(os.path.join('src', 'beast', 'python'))
 sys.path.append(os.path.join('bin', 'python'))
 
-from beast.build import BuildState
+from beast.build import Build
 from ripple.build.Config import CONFIG
 
-BuildState.run(sconstruct_globals=globals(), **CONFIG)
+Build.run(sconstruct_globals=globals(), **CONFIG)

@@ -8,32 +8,31 @@ from __future__ import (
 
 import os
 
-from beast.build.Module import Module
-from beast.build.Function  import Env, compose, files, for_tags
+from beast.build.Build import Env, Module, compose, files, for_tags
 
 MODULE = Module(
-    before=compose(
+    setup=compose(
         Env.Append(
             CPPPATH=['src', os.path.join('src', 'beast')],
-        ),
-
-        for_tags(
-            'darwin',
-            Env.Append(
-                CPPDEFINES=[{'BEAST_COMPILE_OBJECTIVE_CPP': 1}],
-            ),
         ),
     ),
 
     files=compose(
+        for_tags(
+            'darwin',
+            Env.Append(CPPDEFINES=[{'BEAST_COMPILE_OBJECTIVE_CPP': 1}]),
+        ),
+
         files(
             'src/beast/beast/unity/hash_unity.cpp',
             'src/beast/beast/unity/beast.cpp',
         ),
 
         for_tags(
-            'osx',
-            files('src/beast/beast/unity/beastobjc.mm'),
+            'darwin',
+            files(
+                'src/beast/beast/unity/beastobjc.mm',
+            ),
         ),
     ),
 )

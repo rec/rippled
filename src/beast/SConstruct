@@ -4,7 +4,7 @@ import os, sys
 
 sys.path.append('python')
 
-from beast.build import BuildState
+from beast.build import Build
 from beast.build.Config import CONFIG
 
-BuildState.run(sconstruct_globals=globals(), **CONFIG)
+Build.run(sconstruct_globals=globals(), **CONFIG)

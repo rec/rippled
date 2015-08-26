@@ -7,7 +7,8 @@ from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
 import os
-from beast.build import Function, Module
+
+from beast.build.Build import Module, for_tags
 
 def module(architecture='x64'):
     def target(variant):
@@ -16,8 +17,6 @@ def module(architecture='x64'):
             variant.variant + suffix, architecture, variant.target, variant.env)
         variant.state.msvc_configs.append(config)
 
-    return Module.Module(
-        target=Function.for_tags('msvc', target),
-    )
+    return Module(target=for_tags('msvc', target))
 
 MODULE = module()

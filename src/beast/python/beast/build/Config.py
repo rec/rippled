@@ -8,9 +8,8 @@ from __future__ import (
 
 import os
 
-from beast.build import BuildVariant, TagSet, Module
-from beast.build.Module import Module
-from beast.build.Function import compose, files, for_tags
+from beast.build.Build import compose, files, for_tags, Module, TagSet, Variant
+
 from beast.build.module import Vcxproj
 
 MODULES = (
@@ -25,7 +24,7 @@ CONFIG = {
 
             target=for_tags(
                 'unity', 'default_toolchain', 'release',
-                BuildVariant.add_to_default_target('beast'),
+                Variant.add_to_default_target('beast'),
             ),
 
             after=Vcxproj.after(

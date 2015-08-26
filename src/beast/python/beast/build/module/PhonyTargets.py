@@ -9,10 +9,10 @@ from __future__ import (
 # Adds a phony target to the environment that always builds
 # See: http://www.scons.org/wiki/PhonyTargets
 
-from beast.build import Module
+from beast.build.Build import Module
 
 def module(**kwds):
     def f(state):
         for key, value in kwds.items():
             state.env.AlwaysBuild(state.env.Alias(key, [], value))
-    return Module.Module(after=f)
+    return Module(after=f)

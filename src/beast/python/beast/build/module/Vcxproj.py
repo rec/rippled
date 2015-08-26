@@ -8,7 +8,7 @@ from __future__ import (
 
 
 import os
-from beast.build import Module
+from beast.build.Build import Module
 
 def after(target_directory, **kwds):
     def function(state):
@@ -20,4 +20,4 @@ def after(target_directory, **kwds):
     return function
 
 def module(target_directory, **kwds):
-    return Module.Module(after=after(target_directory, **kwds))
+    return Module(after=after(target_directory, **kwds))

@@ -109,16 +109,3 @@ class Targets(object):
 
     def __repr__(self):
         return 'Target(%s)' % repr(self.targets)
-
-
-class Target(object):
-    def __init__(self, name, tag_groups=None, program_name=None):
-        self.name = name
-        self.tag_groups = TagGroups(*(tag_groups or ()))
-        self.program_name = program_name
-
-CPP_GROUPS = (
-    ('gcc', 'clang', 'msvc'),
-    ('release', 'debug', 'profile'),
-    ('unity', 'nounity'),
-)

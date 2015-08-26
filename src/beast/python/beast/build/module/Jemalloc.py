@@ -8,15 +8,16 @@ from __future__ import (
 
 """
 If there's a command line argument profile-jemalloc=</path/to/jemalloc>, change
-the BuildState's environment to use the jemalloc found at that root.
+the State's environment to use the jemalloc found at that root.
 """
 
 import os
-from beast.build import Module
 
-def jemalloc(state):
-    profile_jemalloc = state.sconstruct.ARGUMENTS.get(
-        'profile-jemalloc')
+from beast.build.Build import Module
+
+def setup(variant):
+    state = variant.state
+    profile_jemalloc = state.sconstruct.ARGUMENTS.get('profile-jemalloc')
     if profile_jemalloc:
         state.env.Append(
             CPPDEFINES={'PROFILE_JEMALLOC': profile_jemalloc},
@@ -26,4 +27,4 @@ def jemalloc(state):
             LINKFLAGS=['-Wl,-rpath,' + os.path.join(profile_jemalloc, 'lib')],
         )
 
-MODULE = Module.Module(before=jemalloc)
+MODULE = Module(setup=setup)
