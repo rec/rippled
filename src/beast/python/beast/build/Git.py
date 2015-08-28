@@ -30,10 +30,13 @@ def _execute(args, include_errors=True, **kwds):
 
 
 def git_tag():
-    tags = _execute('git describe --tags')
-    branch = _execute('git rev-parse --abbrev-ref HEAD')
-    remote = _execute('git config remote.origin.url')
-    user = remote.split(':')[1].split('/')[0]
+    try:
+        tags = _execute('git describe --tags')
+        branch = _execute('git rev-parse --abbrev-ref HEAD')
+        remote = _execute('git config remote.origin.url')
+        user = remote.split(':')[1].split('/')[0]
 
-    id = '%s+%s.%s' % (tags, user, branch)
-    return {'CPPDEFINES': {'GIT_COMMIT_ID' : '\'"%s"\'' % id}}
+        id = '%s+%s.%s' % (tags, user, branch)
+        return {'CPPDEFINES': {'GIT_COMMIT_ID' : '\'"%s"\'' % id}}
+    except:
+        return {}
