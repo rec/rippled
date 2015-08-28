@@ -1,10 +1,47 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
 
 import os, sys
 
 sys.path.append('python')
 
-from beast.build import Build
-from beast.build.Config import CONFIG
+from beast.build.Build import (
+    compose, files, for_tags, run_build, Module, Target, Variant)
 
-Build.run(sconstruct_globals=globals(), **CONFIG)
+from beast.build.module import AddTarget, Vcxproj
+
+
+run_build(
+    sconstruct_globals=globals(),
+
+    build_dir='build/beast',
+
+    modules=[
+        Module(
+            files=files('beast/main.cpp'),
+
+            target=for_tags(
+                'unity', 'default_toolchain', 'release',
+                AddTarget.add_to_default('beast'),
+            ),
+
+            after=Vcxproj.after(
+                os.path.join('Builds', 'VisualStudio2013', 'Beast'),
+                source=[],
+                VSPROJECT_ROOT_DIRS=['.'],
+            ),
+        ),
+    ],
+
+    targets=[
+        Target('install', Target.CPP_GROUPS, program_name='beast'),
+        Target('vcxproj'),
+    ],
+
+    environment={
+        'toolpath': [os.path.join('python', 'site_tools')],
+        'tools': ['default', 'Protoc', 'VSProject'],
+        'ENV': os.environ,
+        'TARGET_ARCH': 'x86_64',
+    },
+)

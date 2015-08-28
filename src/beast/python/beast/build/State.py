@@ -46,7 +46,7 @@ class State(object):
     def get_environment_variable(self, key, default=None):
         return self.subst(self.environ.get(key, default))
 
-    def run(self, modules, targets):
+    def run_build(self, modules, targets):
         targets = Target.Targets(*targets)
         module = Module.compose(*modules)
         module.before(self)
@@ -86,11 +86,11 @@ DEFAULTS = {
 }
 
 
-def _run(sconstruct_globals, environment, variant_tree, build_dir,
+def _run_build(sconstruct_globals, environment, variant_tree, build_dir,
             modules, targets):
     state = State(sconstruct_globals, environment, variant_tree, build_dir)
-    return state.run(modules, targets)
+    return state.run_build(modules, targets)
 
 
-def run(**kwds):
-    _run(**dict(DEFAULTS, **kwds))
+def run_build(**kwds):
+    _run_build(**dict(DEFAULTS, **kwds))
