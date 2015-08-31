@@ -17,9 +17,11 @@ def list_sources(root, suffixes, walk=os.walk):
     condition = lambda path: match_suffix(suffixes, path)
     return iterate_files(root, os.path.normpath, condition, walk)
 
+
 class Variant(object):
     def __init__(self, state, tags, toolchains, program):
         self.variant_name = '.'.join(tags).replace('.unity', '')
+        print(self.variant_name)
 
         self.state = state
         self.tags = list(tags) + self.state.tags
@@ -83,3 +85,8 @@ class Variant(object):
     def add_source_directories(self, *directories, **kwds):
         for d in directories:
             self.add_source_files(*list_sources(d, '.cpp'), **kwds)
+
+
+def run_variants(state, tags, toolchains, program_name, module):
+    variant = Variant(state, tags, toolchains, program_name)
+    variant.run(module)

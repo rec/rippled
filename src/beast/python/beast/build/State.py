@@ -60,11 +60,10 @@ class State(object):
         target_line = list(self.sconstruct.COMMAND_LINE_TARGETS)
 
         for target, tags_list in targets.targets_to_tags(target_line).items():
-            if target.program_name:
+            pname = target.program_name
+            if pname:
                 for tags in tags_list:
-                    variant = Variant.Variant(
-                        self, tags, toolchains, target.program_name)
-                    variant.run(module)
+                    Variant.run_variants(self, tags, toolchains, pname, module)
 
         for key, value in self.aliases.iteritems():
             self.env.Alias(key, value)
