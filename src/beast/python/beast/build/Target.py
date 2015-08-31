@@ -59,11 +59,12 @@ class Targets(object):
 
 # Our preferred compiler is gcc, except on OS/X.
 # TODO: figure out a way to get this rule into data!!
-COMPILERS = ('clang', 'gcc', 'msvc') if SYSTEM.osx else ('gcc', 'clang', 'msvc')
+TOOLCHAINS = ('clang', 'gcc', 'msvc') if SYSTEM.osx else (
+    'gcc', 'clang', 'msvc')
 
 class Target(object):
     CPP_GROUPS = (
-        COMPILERS,
+        TOOLCHAINS,
         ('release', 'debug', 'profile'),
         ('unity', 'nounity'),
     )
