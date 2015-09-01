@@ -65,6 +65,7 @@ class Variant(object):
         module.target(self)
         if self.toolchain in self.toolchains:
             self.state.aliases[self.variant].extend(self.target)
+            print('self.env.Alias', self.variant_name, self.target)
             self.env.Alias(self.variant_name, self.target)
 
     def add_source_files(self, *filenames, **kwds):
@@ -86,6 +87,6 @@ class Variant(object):
             self.add_source_files(*list_sources(d, '.cpp'), **kwds)
 
 
-def add_variant(state, tags, toolchains, program_name, module):
-    variant = Variant(state, tags, toolchains, program_name)
+def add_variant(state, tags, toolchains, result_name, module):
+    variant = Variant(state, tags, toolchains, result_name)
     variant.add_module(module)

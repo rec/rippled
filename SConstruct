@@ -310,7 +310,7 @@ run_build(
     modules=MODULES,
 
     targets=[
-        Target('install', Target.CPP_GROUPS, program_name='rippled'),
+        Target('install', Target.CPP_GROUPS, result_name='rippled'),
         Target('vcxproj'),
         Target('count_tests'),
     ],

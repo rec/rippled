@@ -62,7 +62,7 @@ class State(object):
         ttt = targets.targets_to_tags(target_line)
         print('!!!', ttt)
         for target, tags_list in targets.targets_to_tags(target_line).items():
-            pname = target.program_name
+            pname = target.result_name
             if pname:
                 for tags in tags_list:
                     Variant.add_variant(self, tags, toolchains, pname, module)

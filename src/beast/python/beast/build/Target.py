@@ -71,10 +71,10 @@ class Target(object):
         ('unity', 'nounity'),
     )
 
-    def __init__(self, name, tag_groups=None, program_name=None):
+    def __init__(self, name, tag_groups=None, result_name=None):
         self.name = name
         self.tag_groups = TagGroups(*(tag_groups or ()))
-        self.program_name = program_name
+        self.result_name = result_name
 
     def __repr__(self):
         return 'Target(%s)' % self.name
