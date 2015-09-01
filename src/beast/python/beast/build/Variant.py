@@ -65,8 +65,6 @@ class Variant(object):
         module.target(self)
         if self.toolchain in self.toolchains:
             self.state.aliases[self.variant].extend(self.target)
-            print('self.env.Alias', self.variant_name, self.target)
-            self.env.Alias(self.variant_name, self.target)
 
     def add_source_files(self, *filenames, **kwds):
         update_warning_kwds(self.tags, kwds)

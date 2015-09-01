@@ -72,16 +72,16 @@ class Target(object):
     )
 
     """
-    name:         the name of the Target.
-    tag_groups:   an optional list of possible build tags for this target.
-    result_name:  the name of the resulting binary file.
-    requires:     an optional list of another targets that this one requires.
+      name:         the name of the Target.
+      tag_groups:   an optional list of possible build tags for this target.
+      result_name:  the name of the resulting binary file.
+      requires:     an optional list of another targets that this one requires.
     """
     def __init__(self, name, tag_groups=None, result_name=None, requires=None):
         self.name = name
         self.tag_groups = TagGroups(*(tag_groups or ()))
         self.result_name = result_name
-        self.requires = requires
+        self.requires = requires or []
 
     def __repr__(self):
         return 'Target(%s)' % self.name
