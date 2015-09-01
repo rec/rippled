@@ -9,8 +9,8 @@ from __future__ import (
 import collections
 import itertools
 
-from .TagGroups import TagGroups
-from ..System import SYSTEM
+from . TagGroups import TagGroups
+from .. System import SYSTEM
 
 
 class Targets(object):
@@ -57,10 +57,12 @@ class Targets(object):
     def __repr__(self):
         return 'Target(%s)' % repr(self.targets)
 
+
 # Our preferred compiler is gcc, except on OS/X.
 # TODO: figure out a way to get this rule into data!!
 TOOLCHAINS = ('clang', 'gcc', 'msvc') if SYSTEM.osx else (
     'gcc', 'clang', 'msvc')
+
 
 class Target(object):
     CPP_GROUPS = (

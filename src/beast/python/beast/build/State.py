@@ -59,6 +59,7 @@ class State(object):
 
         target_line = list(self.sconstruct.COMMAND_LINE_TARGETS)
 
+        ttt = targets.targets_to_tags(target_line)
         for target, tags_list in targets.targets_to_tags(target_line).items():
             pname = target.program_name
             if pname:

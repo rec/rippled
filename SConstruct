@@ -258,12 +258,12 @@ TARGETS = Module(
     target=compose(
         for_tags(
             'unity', 'default_toolchain', 'release',
-            AddTarget.add_to_default('install'),
+            AddTarget.make_default,
         ),
 
         for_tags(
             'unity',
-            AddTarget.add_to_all(),
+            AddTarget.add_to_all,
         ),
     ),
 )

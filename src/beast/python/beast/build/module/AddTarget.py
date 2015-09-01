@@ -8,21 +8,16 @@ from __future__ import (
 
 
 ALL_TARGET = 'all'
+DEFAULT_TARGET = 'install'
 
-def add_to_all(all_target=ALL_TARGET):
-    def f(variant):
-        if variant.toolchain in variant.toolchains:
-            variant.state.aliases[all_target].extend(variant.target)
-            variant.state.aliases[variant.toolchain].extend(variant.target)
+def add_to_all(variant, all_target=ALL_TARGET):
+    if variant.toolchain in variant.toolchains:
+        variant.state.aliases[all_target].extend(variant.target)
+        variant.state.aliases[variant.toolchain].extend(variant.target)
 
-    return f
-
-def add_to_default(default_target, all_target=ALL_TARGET):
-    def f(variant):
-        install_target = variant.env.Install(
-            variant.state.build_dir, source=variant.target)
-        variant.env.Alias(default_target, install_target)
-        variant.env.Default(install_target)
-        variant.state.aliases[all_target].extend(install_target)
-
-    return f
+def make_default(variant, default_target=DEFAULT_TARGET, all_target=ALL_TARGET):
+    install_target = variant.env.Install(
+        variant.state.build_dir, source=variant.target)
+    variant.env.Alias(default_target, install_target)
+    variant.env.Default(install_target)
+    variant.state.aliases[all_target].extend(install_target)
