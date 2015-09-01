@@ -75,3 +75,6 @@ class Target(object):
         self.name = name
         self.tag_groups = TagGroups(*(tag_groups or ()))
         self.program_name = program_name
+
+    def __repr__(self):
+        return 'Target(%s)' % self.name

@@ -40,13 +40,12 @@ class Variant(object):
         self.env.Replace(**toolchains.get(self.toolchain, {}))
         self.objects = []
         self.files_seen = set()
+        self.variant_directory_tree = {
+            os.path.join(self.variant_directory, k): v
+            for (k, v) in self.state.variant_tree.items()
+        }
 
-    def variant_directory_tree(self):
-        vdir = self.variant_directory
-        items = self.state.variant_tree.items()
-        return {os.path.join(vdir, k): v for (k, v) in items}
-
-    def run(self, module):
+    def add_module(self, module):
         # Set up environment.
         module.setup(self)
 
@@ -54,7 +53,7 @@ class Variant(object):
         module.files(self)
 
         # Now produce all the variant trees.
-        for dest, source in self.variant_directory_tree().items():
+        for dest, source in self.variant_directory_tree.items():
             self.env.VariantDir(dest, source, duplicate=0)
 
         # Finally, make the program target.
@@ -70,7 +69,7 @@ class Variant(object):
 
     def add_source_files(self, *filenames, **kwds):
         update_warning_kwds(self.tags, kwds)
-        variants = self.variant_directory_tree()
+        variants = self.variant_directory_tree
         for filename in filenames:
             vfile = variant_file(filename, variants)
             if vfile in self.files_seen:
@@ -87,6 +86,6 @@ class Variant(object):
             self.add_source_files(*list_sources(d, '.cpp'), **kwds)
 
 
-def run_variants(state, tags, toolchains, program_name, module):
+def add_variant(state, tags, toolchains, program_name, module):
     variant = Variant(state, tags, toolchains, program_name)
-    variant.run(module)
+    variant.add_module(module)
