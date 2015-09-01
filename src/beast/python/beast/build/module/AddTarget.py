@@ -12,12 +12,12 @@ DEFAULT_TARGET = 'install'
 
 def add_to_all(variant, all_target=ALL_TARGET):
     if variant.toolchain in variant.toolchains:
-        variant.state.aliases[all_target].extend(variant.target)
-        variant.state.aliases[variant.toolchain].extend(variant.target)
+        variant.state.add_aliases(all_target, *variant.target)
+        variant.state.add_aliases(variant.toolchain, *variant.target)
 
 def make_default(variant, default_target=DEFAULT_TARGET, all_target=ALL_TARGET):
     install_target = variant.env.Install(
         variant.state.build_dir, source=variant.target)
     variant.env.Alias(default_target, install_target)
     variant.env.Default(install_target)
-    variant.state.aliases[all_target].extend(install_target)
+    variant.state.add_aliases(all_target, *install_target)

@@ -46,6 +46,9 @@ class State(object):
     def get_environment_variable(self, key, default=None):
         return self.subst(self.environ.get(key, default))
 
+    def add_aliases(self, key, *value):
+        self.aliases[key].extend(value)
+
     def run_build(self, modules, targets):
         targets = Target.Targets(*targets)
         module = Module.compose(*modules)

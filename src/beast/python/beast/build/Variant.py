@@ -64,7 +64,7 @@ class Variant(object):
         # Now we run the "target" phase.
         module.target(self)
         if self.toolchain in self.toolchains:
-            self.state.aliases[self.variant].extend(self.target)
+            self.state.add_aliases(self.variant, *self.target)
 
     def add_source_files(self, *filenames, **kwds):
         update_warning_kwds(self.tags, kwds)
