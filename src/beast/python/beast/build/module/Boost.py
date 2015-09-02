@@ -16,17 +16,8 @@ def boost(variant, link_libraries):
     if root:
         root = os.path.normpath(root)
         variant.env['BOOST_ROOT'] = root
-
-        # We prefer static libraries for boost
-        static_libs = ['%s/stage/lib/lib%s.a' % (root, l)
-                       for l in link_libraries]
-        if all(os.path.exists(f) for f in static_libs):
-            link_libraries = [variant.state.sconstruct.File(f)
-                              for f in static_libs]
-            link_libraries = static_libs
-            variant.env.Append(CPPPATH=[root],
-                               LIBPATH=[os.path.join(root, 'stage', 'lib')])
-
+        variant.env.Append(CPPPATH=[root],
+                           LIBPATH=[os.path.join(root, 'stage', 'lib')])
     variant.env.Append(LIBS=link_libraries + ['dl'])
 
 
