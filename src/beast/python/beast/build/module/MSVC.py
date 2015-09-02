@@ -12,6 +12,7 @@ from beast.build.Build import Module, for_tags
 
 def module(architecture='x64'):
     def target(variant):
+        assert variant.target, 'MSVC needs a target.'
         suffix = '.classic' if ('nounity' in variant.tags) else ''
         config = variant.env.VSProjectConfig(
             variant.variant + suffix, architecture, variant.target, variant.env)

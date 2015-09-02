@@ -18,7 +18,7 @@ def _execute(args, include_errors=True, **kwds):
         report a warning if there was more than one line."""
         lines = line.strip().splitlines()
         if report_errors and len(lines) > 1:
-          print('multiline result:', lines)
+            print('multiline result:', lines)
         return joiner.join(lines)
     def is_string(s):
         """Is s a string? - in either Python 2.x or 3.x."""

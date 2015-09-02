@@ -3,6 +3,9 @@
 # This file copyright (c) 2015, Tom Ritchford <tom@swirly.com>
 # under the Boost software license http://www.boost.org/LICENSE_1_0.txt
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+
 from .Files import files, directories
 from .Function import compose, for_tags, not_tags
 from .Module import Module
@@ -21,8 +24,6 @@ class __EnvClass(object):
         def f(*args, **kwds):
             # build can be anything with a .env member - i.e. either a
             # Variant or a State.
-            if name == 'append':
-                print(name, args, kwds)
             return lambda build: getattr(build.env, name)(*args, **kwds)
         return f
 

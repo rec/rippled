@@ -12,7 +12,6 @@ from beast.build.Build import Module
 
 def after(target_directory, **kwds):
     def function(state):
-        print(state.msvc_configs)
         vcxproj = state.env.VSProject(
             target_directory,
             VSPROJECT_CONFIGS=state.msvc_configs,

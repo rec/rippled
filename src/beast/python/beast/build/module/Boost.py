@@ -23,6 +23,7 @@ def boost(variant, link_libraries):
         if all(os.path.exists(f) for f in static_libs):
             link_libraries = [variant.state.sconstruct.File(f)
                               for f in static_libs]
+            link_libraries = static_libs
             variant.env.Append(CPPPATH=[root],
                                LIBPATH=[os.path.join(root, 'stage', 'lib')])
 

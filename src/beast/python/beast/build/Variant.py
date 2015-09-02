@@ -21,8 +21,6 @@ def list_sources(root, suffixes, walk=os.walk):
 class Variant(object):
     def __init__(self, state, tags, toolchains, program):
         self.variant_name = '.'.join(tags).replace('.unity', '')
-        print(self.variant_name)
-
         self.state = state
         self.tags = list(tags) + self.state.tags
 
@@ -44,7 +42,6 @@ class Variant(object):
             os.path.join(self.variant_directory, k): v
             for (k, v) in self.state.variant_tree.items()
         }
-        print('Variant', self.toolchain, self.variant_name)
 
     def add_module(self, module):
         # Set up environment.
@@ -58,15 +55,13 @@ class Variant(object):
             self.env.VariantDir(dest, source, duplicate=0)
 
         # Finally, make the program target.
-        if not self.program:
-            return
-        self.target = self.env.Program(
+        self.target = (self.program and self.env.Program(
             target=os.path.join(self.variant_directory, self.program),
-            source=self.objects)
+            source=self.objects)) or []
 
         # Now we run the "target" phase.
         module.target(self)
-        if self.toolchain in self.toolchains:
+        if self.target and self.toolchain in self.toolchains:
             self.env.Alias(self.variant_name, self.target)
 
     def add_source_files(self, *filenames, **kwds):

@@ -318,7 +318,7 @@ run_build(
 
     targets=[
         Target('install', tag_groups=Target.CPP_GROUPS, result_name='rippled'),
-        Target('vcxproj', tag_groups=MSVC_GROUPS),
+        Target('vcxproj', tag_groups=MSVC_GROUPS, result_name='rippled'),
         Target('count_tests'),
     ],
 )
