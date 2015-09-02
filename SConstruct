@@ -305,13 +305,20 @@ MODULES = (
     WEBSOCKETS,
 )
 
+MSVC_GROUPS = (
+    ('msvc',),
+    ('release', 'debug', 'profile'),
+    ('unity', 'nounity'),
+)
+
+
 run_build(
     sconstruct_globals=globals(),
     modules=MODULES,
 
     targets=[
         Target('install', tag_groups=Target.CPP_GROUPS, result_name='rippled'),
-        Target('vcxproj', requires=['install']),
+        Target('vcxproj', tag_groups=MSVC_GROUPS),
         Target('count_tests'),
     ],
 )

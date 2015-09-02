@@ -62,21 +62,10 @@ class State(object):
 
         target_line = list(self.sconstruct.COMMAND_LINE_TARGETS)
 
-        ttt = targets.targets_to_tags(target_line).items()
-
-        requires, targets = set(), set()
-
-        for target, _ in ttt:
-            requires.update(target.requires)
-            targets.add(target.name)
-
-        print(targets, requires)
-
-        for target, tags_list in ttt:
-            pname = target.result_name
-            if pname:
-                for tags in tags_list:
-                    Variant.add_variant(self, tags, toolchains, pname, module)
+        for target, tags_list in targets.targets_to_tags(target_line).items():
+            for tags in tags_list:
+                Variant.add_variant(
+                    self, tags, toolchains, target.result_name, module)
 
         for variant_name, target in self.aliases.iteritems():
             self.env.Alias(variant_name, target)

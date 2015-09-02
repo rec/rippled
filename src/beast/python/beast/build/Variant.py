@@ -44,6 +44,7 @@ class Variant(object):
             os.path.join(self.variant_directory, k): v
             for (k, v) in self.state.variant_tree.items()
         }
+        print('Variant', self.toolchain, self.variant_name)
 
     def add_module(self, module):
         # Set up environment.
@@ -57,6 +58,8 @@ class Variant(object):
             self.env.VariantDir(dest, source, duplicate=0)
 
         # Finally, make the program target.
+        if not self.program:
+            return
         self.target = self.env.Program(
             target=os.path.join(self.variant_directory, self.program),
             source=self.objects)
