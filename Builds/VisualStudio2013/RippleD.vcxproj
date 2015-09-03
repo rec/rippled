@@ -146,7 +146,7 @@
       <AdditionalOptions>-pthread /bigobj /FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>/development/boost_1_58_0/stage/lib/libboost_context.a;/development/boost_1_58_0/stage/lib/libboost_coroutine.a;/development/boost_1_58_0/stage/lib/libboost_date_time.a;/development/boost_1_58_0/stage/lib/libboost_filesystem.a;/development/boost_1_58_0/stage/lib/libboost_program_options.a;/development/boost_1_58_0/stage/lib/libboost_regex.a;/development/boost_1_58_0/stage/lib/libboost_system.a;/development/boost_1_58_0/stage/lib/libboost_thread.a;advapi32.lib;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;boost_context;boost_coroutine;boost_date_time;boost_filesystem;boost_program_options;boost_regex;boost_system;boost_thread;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>True</SuppressStartupBanner>
       <ErrorReporting>NoErrorReport</ErrorReporting>
       <RandomizedBaseAddress>True</RandomizedBaseAddress>
@@ -183,7 +183,7 @@
       <AdditionalOptions>-pthread /bigobj /FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>/development/boost_1_58_0/stage/lib/libboost_context.a;/development/boost_1_58_0/stage/lib/libboost_coroutine.a;/development/boost_1_58_0/stage/lib/libboost_date_time.a;/development/boost_1_58_0/stage/lib/libboost_filesystem.a;/development/boost_1_58_0/stage/lib/libboost_program_options.a;/development/boost_1_58_0/stage/lib/libboost_regex.a;/development/boost_1_58_0/stage/lib/libboost_system.a;/development/boost_1_58_0/stage/lib/libboost_thread.a;advapi32.lib;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;boost_context;boost_coroutine;boost_date_time;boost_filesystem;boost_program_options;boost_regex;boost_system;boost_thread;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>True</SuppressStartupBanner>
       <ErrorReporting>NoErrorReport</ErrorReporting>
       <RandomizedBaseAddress>True</RandomizedBaseAddress>
@@ -216,7 +216,7 @@
       <AdditionalOptions>-pthread /bigobj /FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>/development/boost_1_58_0/stage/lib/libboost_context.a;/development/boost_1_58_0/stage/lib/libboost_coroutine.a;/development/boost_1_58_0/stage/lib/libboost_date_time.a;/development/boost_1_58_0/stage/lib/libboost_filesystem.a;/development/boost_1_58_0/stage/lib/libboost_program_options.a;/development/boost_1_58_0/stage/lib/libboost_regex.a;/development/boost_1_58_0/stage/lib/libboost_system.a;/development/boost_1_58_0/stage/lib/libboost_thread.a;advapi32.lib;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;boost_context;boost_coroutine;boost_date_time;boost_filesystem;boost_program_options;boost_regex;boost_system;boost_thread;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>True</SuppressStartupBanner>
       <ErrorReporting>NoErrorReport</ErrorReporting>
       <RandomizedBaseAddress>True</RandomizedBaseAddress>
@@ -249,7 +249,7 @@
       <AdditionalOptions>-pthread /bigobj /FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>/development/boost_1_58_0/stage/lib/libboost_context.a;/development/boost_1_58_0/stage/lib/libboost_coroutine.a;/development/boost_1_58_0/stage/lib/libboost_date_time.a;/development/boost_1_58_0/stage/lib/libboost_filesystem.a;/development/boost_1_58_0/stage/lib/libboost_program_options.a;/development/boost_1_58_0/stage/lib/libboost_regex.a;/development/boost_1_58_0/stage/lib/libboost_system.a;/development/boost_1_58_0/stage/lib/libboost_thread.a;advapi32.lib;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;boost_context;boost_coroutine;boost_date_time;boost_filesystem;boost_program_options;boost_regex;boost_system;boost_thread;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>True</SuppressStartupBanner>
       <ErrorReporting>NoErrorReport</ErrorReporting>
       <RandomizedBaseAddress>True</RandomizedBaseAddress>
@@ -284,7 +284,7 @@
       <AdditionalOptions>-fno-strict-aliasing -O3 -pthread /bigobj /FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>/development/boost_1_58_0/stage/lib/libboost_context.a;/development/boost_1_58_0/stage/lib/libboost_coroutine.a;/development/boost_1_58_0/stage/lib/libboost_date_time.a;/development/boost_1_58_0/stage/lib/libboost_filesystem.a;/development/boost_1_58_0/stage/lib/libboost_program_options.a;/development/boost_1_58_0/stage/lib/libboost_regex.a;/development/boost_1_58_0/stage/lib/libboost_system.a;/development/boost_1_58_0/stage/lib/libboost_thread.a;advapi32.lib;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;boost_context;boost_coroutine;boost_date_time;boost_filesystem;boost_program_options;boost_regex;boost_system;boost_thread;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>True</SuppressStartupBanner>
       <ErrorReporting>NoErrorReport</ErrorReporting>
       <RandomizedBaseAddress>True</RandomizedBaseAddress>
@@ -319,7 +319,7 @@
       <AdditionalOptions>-fno-strict-aliasing -O3 -pthread /bigobj /FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>/development/boost_1_58_0/stage/lib/libboost_context.a;/development/boost_1_58_0/stage/lib/libboost_coroutine.a;/development/boost_1_58_0/stage/lib/libboost_date_time.a;/development/boost_1_58_0/stage/lib/libboost_filesystem.a;/development/boost_1_58_0/stage/lib/libboost_program_options.a;/development/boost_1_58_0/stage/lib/libboost_regex.a;/development/boost_1_58_0/stage/lib/libboost_system.a;/development/boost_1_58_0/stage/lib/libboost_thread.a;advapi32.lib;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;boost_context;boost_coroutine;boost_date_time;boost_filesystem;boost_program_options;boost_regex;boost_system;boost_thread;comdlg32.lib;crypto;dl;gdi32.lib;kernel32.lib;libeay32MT.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;protobuf;pthread;shell32.lib;Shlwapi.lib;ssl;ssleay32MT.lib;user32.lib;uuid.lib;winspool.lib;z;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>True</SuppressStartupBanner>
       <ErrorReporting>NoErrorReport</ErrorReporting>
       <RandomizedBaseAddress>True</RandomizedBaseAddress>
