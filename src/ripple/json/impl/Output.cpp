@@ -35,15 +35,9 @@ void outputJson (Json::Value const& value, Writer& writer)
         break;
     }
 
-    case Json::intValue:
+    case Json::integerValue:
     {
-        writer.output (value.asInt());
-        break;
-    }
-
-    case Json::uintValue:
-    {
-        writer.output (value.asUInt());
+        writer.output (value.asInteger());
         break;
     }
 

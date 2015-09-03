@@ -182,9 +182,10 @@ static boost::optional<detail::STVar> parseLeaf (
             {
                 // VFALCO TODO wtf?
             }
-            else if (value.isInt ())
+            else if (value.isIntegral ())
             {
-                if (value.asInt () < 0 || value.asInt () > 255)
+                auto v = value.asInteger();
+                if (v < 0 || v > 255)
                 {
                     error = out_of_range (json_name, fieldName);
                     return ret;
@@ -192,19 +193,7 @@ static boost::optional<detail::STVar> parseLeaf (
 
                 ret = detail::make_stvar <STUInt8> (field,
                     range_check_cast <unsigned char> (
-                        value.asInt (), 0, 255));
-            }
-            else if (value.isUInt ())
-            {
-                if (value.asUInt () > 255)
-                {
-                    error = out_of_range (json_name, fieldName);
-                    return ret;
-                }
-
-                ret = detail::make_stvar <STUInt8> (field,
-                    range_check_cast <unsigned char> (
-                        value.asUInt (), 0, 255));
+                        v, 0, 255));
             }
             else
             {
@@ -264,17 +253,11 @@ static boost::optional<detail::STVar> parseLeaf (
                         beast::lexicalCastThrow <std::uint16_t> (strValue));
                 }
             }
-            else if (value.isInt ())
+            else if (value.isIntegral ())
             {
                 ret = detail::make_stvar <STUInt16> (field,
                     range_check_cast <std::uint16_t> (
-                        value.asInt (), 0, 65535));
-            }
-            else if (value.isUInt ())
-            {
-                ret = detail::make_stvar <STUInt16> (field,
-                    range_check_cast <std::uint16_t> (
-                        value.asUInt (), 0, 65535));
+                        value.asInteger (), 0, 65535));
             }
             else
             {
@@ -299,16 +282,11 @@ static boost::optional<detail::STVar> parseLeaf (
                     beast::lexicalCastThrow <std::uint32_t> (
                         value.asString ()));
             }
-            else if (value.isInt ())
+            else if (value.isIntegral ())
             {
                 ret = detail::make_stvar <STUInt32> (field,
                     range_check_cast <std::uint32_t> (
-                        value.asInt (), 0u, 4294967295u));
-            }
-            else if (value.isUInt ())
-            {
-                ret = detail::make_stvar <STUInt32> (field,
-                    static_cast <std::uint32_t> (value.asUInt ()));
+                        value.asInteger (), 0u, 4294967295u));
             }
             else
             {
@@ -332,16 +310,11 @@ static boost::optional<detail::STVar> parseLeaf (
                 ret = detail::make_stvar <STUInt64> (field,
                     uintFromHex (value.asString ()));
             }
-            else if (value.isInt ())
+            else if (value.isIntegral ())
             {
                 ret = detail::make_stvar <STUInt64> (field,
                     range_check_cast<std::uint64_t> (
-                        value.asInt (), 0, 18446744073709551615ull));
-            }
-            else if (value.isUInt ())
-            {
-                ret = detail::make_stvar <STUInt64> (field,
-                    static_cast <std::uint64_t> (value.asUInt ()));
+                        value.asInteger (), 0, 18446744073709551615ull));
             }
             else
             {

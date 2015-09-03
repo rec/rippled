@@ -36,8 +36,7 @@ namespace Json
 enum ValueType
 {
     nullValue = 0, ///< 'null' value
-    intValue,      ///< signed integer value
-    uintValue,     ///< unsigned integer value
+    integerValue,  /// 64-bit integer
     realValue,     ///< double value
     stringValue,   ///< UTF-8 string value
     booleanValue,  ///< bool value
@@ -126,6 +125,7 @@ inline bool operator!= (StaticString x, std::string const& y)
  * This class is a discriminated union wrapper that can represent a:
  * - signed integer [range: Value::minInt - Value::maxInt]
  * - unsigned integer (range: 0 - Value::maxUInt)
+ * - long signed integer (std::int64_t)
  * - double
  * - UTF-8 string
  * - boolean
@@ -158,6 +158,7 @@ public:
     using const_iterator = ValueConstIterator;
     using UInt = Json::UInt;
     using Int = Json::Int;
+    using Long = std::int64_t;
     using ArrayIndex = UInt;
 
     static const Value null;
@@ -213,6 +214,7 @@ public:
     Value ( ValueType type = nullValue );
     Value ( Int value );
     Value ( UInt value );
+    Value ( Long value );
     Value ( double value );
     Value ( const char* value );
     Value ( const char* beginValue, const char* endValue );
@@ -250,6 +252,7 @@ public:
     std::string asString () const;
     Int asInt () const;
     UInt asUInt () const;
+    Long asLong() const;
     double asDouble () const;
     bool asBool () const;
 
@@ -259,6 +262,7 @@ public:
     bool isBool () const;
     bool isInt () const;
     bool isUInt () const;
+    bool isLong () const;
     bool isIntegral () const;
     bool isDouble () const;
     bool isNumeric () const;
@@ -381,8 +385,7 @@ private:
 private:
     union ValueHolder
     {
-        Int int_;
-        UInt uint_;
+        Long long_;
         double real_;
         bool bool_;
         char* string_;

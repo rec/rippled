@@ -133,8 +133,8 @@ void Array::append (Json::Value const& v)
     switch (t)
     {
     case Json::nullValue:    return append (nullptr);
-    case Json::intValue:     return append (v.asInt());
-    case Json::uintValue:    return append (v.asUInt());
+    case Json::integerValue:     return append (v.asInt());
+    case Json::integerValue:    return append (v.asUInt());
     case Json::realValue:    return append (v.asDouble());
     case Json::stringValue:  return append (v.asString());
     case Json::booleanValue: return append (v.asBool());
@@ -163,8 +163,8 @@ void Object::set (std::string const& k, Json::Value const& v)
     switch (t)
     {
     case Json::nullValue:    return set (k, nullptr);
-    case Json::intValue:     return set (k, v.asInt());
-    case Json::uintValue:    return set (k, v.asUInt());
+    case Json::integerValue:     return set (k, v.asInt());
+    case Json::integerValue:    return set (k, v.asUInt());
     case Json::realValue:    return set (k, v.asDouble());
     case Json::stringValue:  return set (k, v.asString());
     case Json::booleanValue: return set (k, v.asBool());

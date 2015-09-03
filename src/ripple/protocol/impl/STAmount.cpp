@@ -810,21 +810,18 @@ amountFromJson (SField const& name, Json::Value const& v)
             throw std::runtime_error ("invalid issuer");
     }
 
-    if (value.isInt ())
+    if (value.isIntegral ())
     {
-        if (value.asInt () >= 0)
+        auto v = v.asInteger();
+        if (v >= 0)
         {
             mantissa = value.asInt ();
         }
         else
         {
-            mantissa = -value.asInt ();
+            mantissa = -v;
             negative = true;
         }
-    }
-    else if (value.isUInt ())
-    {
-        mantissa = v.asUInt ();
     }
     else if (value.isString ())
     {

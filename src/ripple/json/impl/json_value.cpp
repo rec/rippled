@@ -201,9 +201,10 @@ Value::Value ( ValueType type )
     case nullValue:
         break;
 
-    case intValue:
-    case uintValue:
-        value_.int_ = 0;
+    case integerValue:
+    case integerValue:
+    case longValue:
+        value_.long_ = 0;
         break;
 
     case realValue:
@@ -230,16 +231,16 @@ Value::Value ( ValueType type )
 
 
 Value::Value ( Int value )
-    : type_ ( intValue )
+    : type_ ( integerValue )
 {
-    value_.int_ = value;
+    value_.long_ = value;
 }
 
 
 Value::Value ( UInt value )
-    : type_ ( uintValue )
+    : type_ ( integerValue )
 {
-    value_.uint_ = value;
+    value_.long_ = value;
 }
 
 Value::Value ( double value )
@@ -304,8 +305,8 @@ Value::Value ( const Value& other )
     switch ( type_ )
     {
     case nullValue:
-    case intValue:
-    case uintValue:
+    case integerValue:
+    case integerValue:
     case realValue:
     case booleanValue:
         value_ = other.value_;
@@ -338,8 +339,8 @@ Value::~Value ()
     switch ( type_ )
     {
     case nullValue:
-    case intValue:
-    case uintValue:
+    case integerValue:
+    case integerValue:
     case realValue:
     case booleanValue:
         break;
@@ -422,10 +423,10 @@ bool operator < (const Value& x, const Value& y)
 {
     if (auto signum = x.type_ - y.type_)
     {
-        if (x.type_ == intValue && y.type_ == uintValue)
-            signum = integerCmp (x.value_.int_, y.value_.uint_);
-        else if (x.type_ == uintValue && y.type_ == intValue)
-            signum = - integerCmp (y.value_.int_, x.value_.uint_);
+        if (x.type_ == integerValue && y.type_ == integerValue)
+            signum = integerCmp (x.value_.long_, y.value_.long_);
+        else if (x.type_ == integerValue && y.type_ == integerValue)
+            signum = - integerCmp (y.value_.long_, x.value_.long_);
         return signum < 0;
     }
 
@@ -434,11 +435,11 @@ bool operator < (const Value& x, const Value& y)
     case nullValue:
         return false;
 
-    case intValue:
-        return x.value_.int_ < y.value_.int_;
+    case integerValue:
+        return x.value_.long_ < y.value_.long_;
 
-    case uintValue:
-        return x.value_.uint_ < y.value_.uint_;
+    case integerValue:
+        return x.value_.long_ < y.value_.long_;
 
     case realValue:
         return x.value_.real_ < y.value_.real_;
@@ -471,10 +472,10 @@ bool operator== (const Value& x, const Value& y)
 {
     if (x.type_ != y.type_)
     {
-        if (x.type_ == intValue && y.type_ == uintValue)
-            return ! integerCmp (x.value_.int_, y.value_.uint_);
-        if (x.type_ == uintValue && y.type_ == intValue)
-            return ! integerCmp (y.value_.int_, x.value_.uint_);
+        if (x.type_ == integerValue && y.type_ == integerValue)
+            return ! integerCmp (x.value_.long_, y.value_.long_);
+        if (x.type_ == integerValue && y.type_ == integerValue)
+            return ! integerCmp (y.value_.long_, x.value_.long_);
         return false;
     }
 
@@ -483,11 +484,11 @@ bool operator== (const Value& x, const Value& y)
     case nullValue:
         return true;
 
-    case intValue:
-        return x.value_.int_ == y.value_.int_;
+    case integerValue:
+        return x.value_.long_ == y.value_.long_;
 
-    case uintValue:
-        return x.value_.uint_ == y.value_.uint_;
+    case integerValue:
+        return x.value_.long_ == y.value_.long_;
 
     case realValue:
         return x.value_.real_ == y.value_.real_;
@@ -534,11 +535,14 @@ Value::asString () const
     case booleanValue:
         return value_.bool_ ? "true" : "false";
 
-    case intValue:
-        return beast::lexicalCastThrow <std::string> (value_.int_);
+    case integerValue:
+    case integerValue:
+    case longValue:
+        return std::to_string(value_.long_);
 
-    case uintValue:
     case realValue:
+        return std::to_string(value_.real_);
+
     case arrayValue:
     case objectValue:
         JSON_ASSERT_MESSAGE ( false, "Type is not convertible to string" );
@@ -558,16 +562,15 @@ Value::asInt () const
     case nullValue:
         return 0;
 
-    case intValue:
-        return value_.int_;
-
-    case uintValue:
-        JSON_ASSERT_MESSAGE ( value_.uint_ < (unsigned)maxInt, "integer out of signed integer range" );
-        return value_.uint_;
+    case integerValue:
+    case integerValue:
+    case longValue:
+        JSON_ASSERT_MESSAGE ( value_.long_ >= minInt && value_.long_ <= maxInt, "integer out of signed integer range" );
+        return Int(value_.long_);
 
     case realValue:
         JSON_ASSERT_MESSAGE ( value_.real_ >= minInt  &&  value_.real_ <= maxInt, "Real out of signed integer range" );
-        return Int ( value_.real_ );
+        return Int( value_.real_ );
 
     case booleanValue:
         return value_.bool_ ? 1 : 0;
@@ -594,12 +597,13 @@ Value::asUInt () const
     case nullValue:
         return 0;
 
-    case intValue:
-        JSON_ASSERT_MESSAGE ( value_.int_ >= 0, "Negative integer can not be converted to unsigned integer" );
-        return value_.int_;
+    case integerValue:
+    case integerValue:
+    case longValue:
+        JSON_ASSERT_MESSAGE ( value_.long_ >= 0, "Negative integer can not be converted to unsigned integer" );
+        JSON_ASSERT_MESSAGE ( value_.long_ <= maxUInt, "Unsigned integer out of range" );
 
-    case uintValue:
-        return value_.uint_;
+        return value_.long_;
 
     case realValue:
         JSON_ASSERT_MESSAGE ( value_.real_ >= 0  &&  value_.real_ <= maxUInt,  "Real out of unsigned integer range" );
@@ -630,11 +634,10 @@ Value::asDouble () const
     case nullValue:
         return 0.0;
 
-    case intValue:
-        return value_.int_;
-
-    case uintValue:
-        return value_.uint_;
+    case integerValue:
+    case integerValue:
+    case longValue:
+        return value_.long_;
 
     case realValue:
         return value_.real_;
@@ -662,9 +665,10 @@ Value::asBool () const
     case nullValue:
         return false;
 
-    case intValue:
-    case uintValue:
-        return value_.int_ != 0;
+    case integerValue:
+    case integerValue:
+    case longValue:
+        return value_.long_ != 0;
 
     case realValue:
         return value_.real_ != 0.0;
@@ -695,34 +699,34 @@ Value::isConvertibleTo ( ValueType other ) const
     case nullValue:
         return true;
 
-    case intValue:
-        return ( other == nullValue  &&  value_.int_ == 0 )
-               || other == intValue
-               || ( other == uintValue  && value_.int_ >= 0 )
+    case integerValue:
+        return ( other == nullValue  &&  value_.long_ == 0 )
+               || other == integerValue
+               || ( other == integerValue  && value_.long_ >= 0 )
                || other == realValue
                || other == stringValue
                || other == booleanValue;
 
-    case uintValue:
-        return ( other == nullValue  &&  value_.uint_ == 0 )
-               || ( other == intValue  && value_.uint_ <= (unsigned)maxInt )
-               || other == uintValue
+    case integerValue:
+        return ( other == nullValue  &&  value_.long_ == 0 )
+               || ( other == integerValue  && value_.long_ <= (unsigned)maxInt )
+               || other == integerValue
                || other == realValue
                || other == stringValue
                || other == booleanValue;
 
     case realValue:
         return ( other == nullValue  &&  value_.real_ == 0.0 )
-               || ( other == intValue  &&  value_.real_ >= minInt  &&  value_.real_ <= maxInt )
-               || ( other == uintValue  &&  value_.real_ >= 0  &&  value_.real_ <= maxUInt )
+               || ( other == integerValue  &&  value_.real_ >= minInt  &&  value_.real_ <= maxInt )
+               || ( other == integerValue  &&  value_.real_ >= 0  &&  value_.real_ <= maxUInt )
                || other == realValue
                || other == stringValue
                || other == booleanValue;
 
     case booleanValue:
         return ( other == nullValue  &&  value_.bool_ == false )
-               || other == intValue
-               || other == uintValue
+               || other == integerValue
+               || other == integerValue
                || other == realValue
                || other == stringValue
                || other == booleanValue;
@@ -754,8 +758,8 @@ Value::size () const
     switch ( type_ )
     {
     case nullValue:
-    case intValue:
-    case uintValue:
+    case integerValue:
+    case integerValue:
     case realValue:
     case booleanValue:
     case stringValue:
@@ -1056,24 +1060,17 @@ Value::isBool () const
 
 
 bool
-Value::isInt () const
-{
-    return type_ == intValue;
-}
-
-
-bool
 Value::isUInt () const
 {
-    return type_ == uintValue;
+    return type_ == integerValue;
 }
 
 
 bool
 Value::isIntegral () const
 {
-    return type_ == intValue
-           ||  type_ == uintValue
+    return type_ == integerValue
+           ||  type_ == integerValue
            ||  type_ == booleanValue;
 }
 

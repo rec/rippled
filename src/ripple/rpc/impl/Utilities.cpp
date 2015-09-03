@@ -94,5 +94,12 @@ injectSLE (Json::Value& jv,
     }
 }
 
+boost::optional<Json::Value> getLimit(
+    Json::Value const& value, unsigned int& limit);
+{
+
+}
+
+
 } // ripple
 } // RPC

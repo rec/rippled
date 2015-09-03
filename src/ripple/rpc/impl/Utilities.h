@@ -52,6 +52,9 @@ void
 injectSLE (Json::Value& jv,
     SLE const& sle);
 
+
+boost::optional<Json::Value> getLimit(Json::Value const&, unsigned int& limit);
+
 } // RPC
 } // ripple
 

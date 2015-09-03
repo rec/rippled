@@ -203,11 +203,11 @@ FastWriter::writeValue ( const Value& value )
         document_ += "null";
         break;
 
-    case intValue:
+    case integerValue:
         document_ += valueToString ( value.asInt () );
         break;
 
-    case uintValue:
+    case integerValue:
         document_ += valueToString ( value.asUInt () );
         break;
 
@@ -297,11 +297,11 @@ StyledWriter::writeValue ( const Value& value )
         pushValue ( "null" );
         break;
 
-    case intValue:
+    case integerValue:
         pushValue ( valueToString ( value.asInt () ) );
         break;
 
-    case uintValue:
+    case integerValue:
         pushValue ( valueToString ( value.asUInt () ) );
         break;
 
@@ -531,11 +531,11 @@ StyledStreamWriter::writeValue ( const Value& value )
         pushValue ( "null" );
         break;
 
-    case intValue:
+    case integerValue:
         pushValue ( valueToString ( value.asInt () ) );
         break;
 
-    case uintValue:
+    case integerValue:
         pushValue ( valueToString ( value.asUInt () ) );
         break;
 
@@ -762,11 +762,11 @@ write_value (write_t write, Value const& value)
         write("null", 4);
         break;
 
-    case intValue:
+    case integerValue:
         write_string(write, valueToString(value.asInt()));
         break;
 
-    case uintValue:
+    case integerValue:
         write_string(write, valueToString(value.asUInt()));
         break;
 
