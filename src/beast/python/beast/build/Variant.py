@@ -35,6 +35,8 @@ class Variant(object):
             self.tags.append('default_toolchain')
 
         self.env = state.env.Clone()
+        print('***** ', self.toolchain, toolchains,
+              toolchains.get(self.toolchain, {}))
         self.env.Replace(**toolchains.get(self.toolchain, {}))
         self.objects = []
         self.files_seen = set()

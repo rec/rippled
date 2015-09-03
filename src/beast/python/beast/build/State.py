@@ -72,12 +72,16 @@ class State(object):
 
         module.after(self)
 
+def _get_sitetools_dir():
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    py_dir = os.path.dirname(os.path.dirname(this_dir))
+    return os.path.join(py_dir, 'site_tools')
 
 DEFAULTS = {
     'build_dir': 'build',
 
     'environment': {
-        'toolpath': [os.path.join('src', 'beast', 'python', 'site_tools')],
+        'toolpath': [_get_sitetools_dir()],
         'tools': ['default', 'Protoc', 'VSProject'],
         'ENV': os.environ,
         'TARGET_ARCH': 'x86_64',
