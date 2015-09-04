@@ -142,7 +142,7 @@ class VisualStudio(Toolchain):
 
     def detect(self, state):
         if state.env.Detect('cl'):
-            return [[MSVC, {'CC': 'cl', 'CXX': 'cl', 'LINK': 'cl'}]]
+            return {'CC': 'cl', 'CXX': 'cl', 'LINK': 'cl'}
 
 
 CLANG = Toolchain('clang', 'CLANG', 'clang', 'clang++', 'clang', 'clang')
