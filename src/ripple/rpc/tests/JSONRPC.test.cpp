@@ -18,7 +18,6 @@
 //==============================================================================
 
 #include <BeastConfig.h>
-#include <ripple/app/paths/FindPaths.h>
 #include <ripple/basics/StringUtilities.h>
 #include <ripple/json/json_reader.h>
 #include <ripple/protocol/SecretKey.h>

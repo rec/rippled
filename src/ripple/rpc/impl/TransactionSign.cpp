@@ -20,7 +20,7 @@
 #include <BeastConfig.h>
 #include <ripple/app/ledger/LedgerMaster.h>
 #include <ripple/app/main/Application.h>
-#include <ripple/app/paths/FindPaths.h>
+#include <ripple/app/paths/Pathfinder.h>
 #include <ripple/basics/Log.h>
 #include <ripple/basics/StringUtilities.h>
 #include <ripple/core/LoadFeeTrack.h>
@@ -150,25 +150,19 @@ TxnSignApiFacade::findPathsForOneIssuer (
     STPathSet const& paths,
     STPath& fullLiquidityPath) const
 {
-    if (! ledger_) // Unit testing.
-    {
-        // Note that unit tests don't (yet) need paths or fullLiquidityPath.
-        boost::optional<STPathSet> result;
-        result.emplace();
-        return result;
-    }
+    // Unit testing. Note that unit tests don't need paths or fullLiquidityPath.
+    if (! ledger_)
+        return STPathSet();
 
-    auto cache = std::make_shared<RippleLineCache> (ledger_);
-    return ripple::findPathsForOneIssuer(
-        cache,
-        accountID_,
-        dstAccountID,
-        srcIssue,
-        dstAmount,
-        searchLevel,
-        maxPaths,
-        paths,
-        fullLiquidityPath);
+    Pathfinder pf(std::make_shared<RippleLineCache>(ledger_),
+        accountID_, dstAccountID, srcIssue.currency,
+            srcIssue.account, dstAmount, boost::none);
+    if (! pf.findPaths(searchLevel))
+        return boost::none;
+
+    pf.computePathRanks(maxPaths);
+    return pf.getBestPaths(maxPaths, fullLiquidityPath,
+        paths, srcIssue.account);
 }
 
 std::uint64_t TxnSignApiFacade::scaleFeeBase (std::uint64_t fee) const
