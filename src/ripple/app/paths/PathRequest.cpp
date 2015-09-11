@@ -474,10 +474,8 @@ PathRequest::findPaths (RippleLineCache::ref cache, int const level,
         {
             if (!sameAccount || (c != saDstAmount.getCurrency()))
             {
-                if (c.isZero())
-                    sourceCurrencies.insert({ c, xrpAccount() });
-                else
-                    sourceCurrencies.insert({ c, *raSrcAccount });
+                sourceCurrencies.insert(
+                    {c, c.isZero() ? xrpAccount() : *raSrcAccount});
             }
         }
     }
@@ -507,9 +505,6 @@ PathRequest::findPaths (RippleLineCache::ref cache, int const level,
             fullLiquidityPath, mContext[issue], issue.account);
         mContext[issue] = ps;
 
-        boost::optional<PaymentSandbox> sandbox;
-        sandbox.emplace(&*cache->getLedger(), tapNONE);
-
         auto& sourceAccount = ! isXRP(issue.account)
             ? issue.account
             : isXRP(issue.currency)
@@ -521,10 +516,16 @@ PathRequest::findPaths (RippleLineCache::ref cache, int const level,
 
         m_journal.debug << iIdentifier
             << " Paths found, calling rippleCalc";
-
+        auto sandbox = std::make_unique<PaymentSandbox>
+            (&*cache->getLedger(), tapNONE);
         auto rc = path::RippleCalc::rippleCalculate(
-            *sandbox, saMaxAmount, dst_amount, *raDstAccount,
-                *raSrcAccount, ps);
+            *sandbox,
+            saMaxAmount,    // --> Amount to send is unlimited
+                            //     to get an estimate.
+            dst_amount,     // --> Amount to deliver.
+            *raDstAccount,  // --> Account to deliver to.
+            *raSrcAccount,  // --> Account sending from.
+            ps);            // --> Path set.
 
         if (! convert_all_ &&
             ! fullLiquidityPath.empty() &&
@@ -532,12 +533,19 @@ PathRequest::findPaths (RippleLineCache::ref cache, int const level,
         {
             m_journal.debug << iIdentifier
                 << " Trying with an extra path element";
-            ps.push_back(fullLiquidityPath);
-            sandbox.emplace(&*cache->getLedger(), tapNONE);
 
+            ps.push_back(fullLiquidityPath);
+            sandbox = std::make_unique<PaymentSandbox>
+                (&*cache->getLedger(), tapNONE);
             rc = path::RippleCalc::rippleCalculate(
-                *sandbox, saMaxAmount, saDstAmount,
-                    *raDstAccount, *raSrcAccount, ps);
+                *sandbox,
+                saMaxAmount,    // --> Amount to send is unlimited
+                                //     to get an estimate.
+                dst_amount,     // --> Amount to deliver.
+                *raDstAccount,  // --> Account to deliver to.
+                *raSrcAccount,  // --> Account sending from.
+                ps);            // --> Path set.
+
             if (rc.result() != tesSUCCESS)
             {
                 m_journal.warning << iIdentifier
