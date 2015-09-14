@@ -516,16 +516,19 @@ PathRequest::findPaths (RippleLineCache::ref cache, int const level,
 
         m_journal.debug << iIdentifier
             << " Paths found, calling rippleCalc";
-        auto sandbox = std::make_unique<PaymentSandbox>
-            (&*cache->getLedger(), tapNONE);
-        auto rc = path::RippleCalc::rippleCalculate(
-            *sandbox,
-            saMaxAmount,    // --> Amount to send is unlimited
-                            //     to get an estimate.
-            dst_amount,     // --> Amount to deliver.
-            *raDstAccount,  // --> Account to deliver to.
-            *raSrcAccount,  // --> Account sending from.
-            ps);            // --> Path set.
+        auto rippleCalc = [&] () {
+            PaymentSandbox sandbox(&*cache->getLedger(), tapNONE);
+            return path::RippleCalc::rippleCalculate(
+                sandbox,
+                saMaxAmount,    // --> Amount to send is unlimited
+                                //     to get an estimate.
+                dst_amount,     // --> Amount to deliver.
+                *raDstAccount,  // --> Account to deliver to.
+                *raSrcAccount,  // --> Account sending from.
+                ps);            // --> Path set.
+        };
+
+        auto rc = rippleCalc();
 
         if (! convert_all_ &&
             ! fullLiquidityPath.empty() &&
@@ -535,16 +538,7 @@ PathRequest::findPaths (RippleLineCache::ref cache, int const level,
                 << " Trying with an extra path element";
 
             ps.push_back(fullLiquidityPath);
-            sandbox = std::make_unique<PaymentSandbox>
-                (&*cache->getLedger(), tapNONE);
-            rc = path::RippleCalc::rippleCalculate(
-                *sandbox,
-                saMaxAmount,    // --> Amount to send is unlimited
-                                //     to get an estimate.
-                dst_amount,     // --> Amount to deliver.
-                *raDstAccount,  // --> Account to deliver to.
-                *raSrcAccount,  // --> Account sending from.
-                ps);            // --> Path set.
+            rc = rippleCalc();
 
             if (rc.result() != tesSUCCESS)
             {
