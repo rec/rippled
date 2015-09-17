@@ -27,7 +27,7 @@ namespace test {
 namespace jtx {
 
 void
-paths::operator()(Env const& env, JTx& jt) const
+paths::operator()(Env& env, JTx& jt) const
 {
     auto& jv = jt.jv;
     auto const from = env.lookup(
@@ -80,7 +80,7 @@ path::append_one(BookSpec const& book)
 }
 
 void
-path::operator()(Env const& env, JTx& jt) const
+path::operator()(Env& env, JTx& jt) const
 {
     jt.jv["Paths"].append(jv_);
 }
