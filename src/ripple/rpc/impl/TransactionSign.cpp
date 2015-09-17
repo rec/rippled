@@ -203,7 +203,8 @@ static Json::Value checkPayment(
                 getConfig().PATH_SEARCH_OLD,
                 4,  // iMaxPaths
                 {},
-                fullLiquidityPath);
+                fullLiquidityPath,
+                app);
 
             if (! result)
             {

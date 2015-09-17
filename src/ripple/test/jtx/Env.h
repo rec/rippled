@@ -149,7 +149,7 @@ public:
     Env (beast::unit_test::suite& test_);
 
     Application&
-    app()
+    app() const
     {
         return getApp();
     }

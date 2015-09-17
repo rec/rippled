@@ -41,7 +41,7 @@ paths::operator()(Env& env, JTx& jt) const
         std::make_shared<RippleLineCache>(
             env.open()), from, to,
                 in_, amount,
-                    depth_, limit_, {}, fp);
+                    depth_, limit_, {}, fp, env.app());
     // VFALCO TODO API to allow caller to examine the STPathSet
     // VFALCO isDefault should be renamed to empty()
     if (found && ! found->isDefault())
